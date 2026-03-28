@@ -343,26 +343,12 @@ function initFB(url, apiKey, projectId) {
 }
 
 function tryAutoInit() {
-  // Injected by GitHub Actions at build time
   const INJECTED = '__FIREBASE_CONFIG__';
   if (INJECTED && !INJECTED.startsWith('__')) {
     try {
       const cfg = JSON.parse(INJECTED);
-      const ok = initFB(cfg.databaseURL, cfg.apiKey, cfg.projectId);
-      if (ok) {
-        document.getElementById('fb-ok').style.display = 'block';
-        document.querySelector('.fb-notice').style.display = 'none';
-        return;
-      }
+      initFB(cfg.databaseURL, cfg.apiKey, cfg.projectId);
     } catch(e) { console.warn('Injected config invalid', e); }
-  }
-  // Fallback: localStorage (manual config)
-  const url = localStorage.getItem('pn_fb_url');
-  const key = localStorage.getItem('pn_fb_key');
-  const pid = localStorage.getItem('pn_fb_pid');
-  if (url && key && pid) {
-    const ok = initFB(url, key, pid);
-    if (ok) document.getElementById('fb-ok').style.display = 'block';
   }
 }
 
@@ -474,7 +460,6 @@ function doneConn(){document.getElementById('conn-ov').style.display='none';}
 
 // ─── Table CRUD ────────────────────────────────────────────────────────────
 window.createTable = async () => {
-  if(!DB){alert('Configure o Firebase primeiro!');return;}
   const nick=document.getElementById('c-nick').value.trim();
   if(!nick){alert('Digite seu apelido!');return;}
   const name=document.getElementById('c-name').value.trim()||'Poker da Turma';
@@ -494,7 +479,6 @@ window.createTable = async () => {
 };
 
 window.joinTable = async () => {
-  if(!DB){alert('Configure o Firebase primeiro!');return;}
   const nick=document.getElementById('j-nick').value.trim();
   const c=document.getElementById('j-code').value.trim().toUpperCase();
   if(!nick){alert('Digite seu apelido!');return;}
