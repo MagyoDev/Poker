@@ -312,9 +312,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
   </div>
 </div>
 
-<script>
-window.__FB__ = /* FIREBASE_CONFIG_PLACEHOLDER */null;
-</script>
 <script type="module">
 // ─── Firebase SDK (ESM from CDN) ───────────────────────────────────────────
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -346,7 +343,7 @@ function initFB(url, apiKey, projectId) {
 }
 
 function tryAutoInit() {
-  const cfg = window.__FB__;
+  const cfg = __FIREBASE_CONFIG__;
   if (cfg && cfg.apiKey) {
     initFB(cfg.databaseURL, cfg.apiKey, cfg.projectId);
   }
@@ -436,7 +433,14 @@ function cmpArr(a,b){for(let i=0;i<Math.min(a.length,b.length);i++)if(a[i]!==b[i
 function combos(arr,k){if(k===0)return[[]];if(arr.length<k)return[];const[f,...r]=arr;return[...combos(r,k-1).map(c=>[f,...c]),...combos(r,k)];}
 function bestHand(hole,comm){
   const all=[...hole,...comm];
-  if(all.length<5){const rank=handRank(all.length>=2?all:[...all]);return{rank,name:HNAMES[rank[0]],desc:HDESCS[rank[0]]};}
+  if(all.length<2)return{name:'—',desc:''};
+  if(all.length<5){
+    // With less than 5 cards just show basic pair detection
+    const rc={};for(const c of all)rc[c.r]=(rc[c.r]||0)+1;
+    const counts=Object.values(rc).sort((a,b)=>b-a);
+    if(counts[0]===2)return{name:'Um Par',desc:'Par nas cartas da mão'};
+    return{name:'High Card',desc:'Sem combinação ainda'};
+  }
   let best=null;
   for(const c of combos(all,5)){const r=handRank(c);if(!best||r[0]>best[0]||(r[0]===best[0]&&cmpArr(r[1],best[1])>0))best=r;}
   return{rank:best,name:HNAMES[best[0]],desc:HDESCS[best[0]]};
@@ -619,12 +623,17 @@ function advanceGame(state){
     state.log.push(w.nick+' ganhou '+state.pot+'!');
     state.phase='waiting_next';state.nextHandAt=Date.now()+6500;return;
   }
+  // Players who can still act (not folded, not all-in)
   const active=state.players.filter(p=>!p.folded&&!p.allIn);
+  // If everyone is all-in or only one can act, go straight to showdown streets
+  if(active.length===0){
+    nextStreet(state);return;
+  }
   const allActed=active.every(p=>state.actedThisRound.includes(p.id)&&p.bet===state.currentBet);
   if(!allActed){
     let next=(state.activePlayerIdx+1)%state.players.length,t=0;
     while((state.players[next].folded||state.players[next].allIn)&&t<state.players.length){next=(next+1)%state.players.length;t++;}
-    if(t>=state.players.length||active.length===0)nextStreet(state);
+    if(t>=state.players.length)nextStreet(state);
     else state.activePlayerIdx=next;
     return;
   }
@@ -642,6 +651,11 @@ function nextStreet(state){
     const res=determineWinner(nf,state.community);
     if(res){res.player.chips+=state.pot;state.winnerName=res.player.nick;state.winnerAmt=state.pot;state.winnerHand=res.hand.name;state.log.push(res.player.nick+' ganhou '+state.pot+' com '+res.hand.name+'!');}
     state.phase='waiting_next';state.nextHandAt=Date.now()+6500;return;
+  }
+  // If no one can act (all all-in), keep advancing streets automatically
+  const active=state.players.filter(p=>!p.folded&&!p.allIn);
+  if(active.length===0){
+    nextStreet(state);return;
   }
   const n=state.players.length;let next=(state.dealerIdx+1)%n,t=0;
   while((state.players[next].folded||state.players[next].allIn)&&t<n){next=(next+1)%n;t++;}
@@ -666,12 +680,13 @@ function renderTable(state){
   const phases={preflop:'Pré-Flop',flop:'Flop',turn:'Turn',river:'River',waiting_next:'Fim da Mão',waiting:'Aguardando'};
   document.getElementById('phase-lbl').textContent=phases[state.phase]||'';
   renderComm(state.community);
-  renderSeats(state);
   renderMyCards(me,state);
   renderActions(state,me);
   const log=state.log||[];
   document.getElementById('glog').textContent=log[log.length-1]||'';
   document.getElementById('btn-start').style.display=(isHost&&(state.phase==='waiting'||state.phase==='waiting_next'))?'block':'none';
+  // Render seats after paint so oval has dimensions
+  requestAnimationFrame(()=>renderSeats(state));
   // Winner overlay
   if(state.winnerName&&state.phase==='waiting_next'){
     if(!winnerShown){winnerShown=true;showWinner(state.winnerName,state.winnerAmt,state.winnerHand,state.nextHandAt);}
@@ -756,9 +771,15 @@ function renderMyCards(me,state){
   const c=document.getElementById('hole-cards');c.innerHTML='';
   if(me.holeCards?.length===2){
     c.appendChild(mkCard(me.holeCards[0]));c.appendChild(mkCard(me.holeCards[1]));
-    const h=bestHand(me.holeCards,state.community||[]);
-    document.getElementById('hr-name').textContent=h.name;
-    document.getElementById('hr-desc').textContent=h.desc;
+    const comm=state.community||[];
+    if(comm.length>=3){
+      const h=bestHand(me.holeCards,comm);
+      document.getElementById('hr-name').textContent=h.name;
+      document.getElementById('hr-desc').textContent=h.desc;
+    } else {
+      document.getElementById('hr-name').textContent='Pré-Flop';
+      document.getElementById('hr-desc').textContent='Aguardando cartas comunitárias';
+    }
   } else {
     c.appendChild(mkDown());c.appendChild(mkDown());
     document.getElementById('hr-name').textContent='—';
