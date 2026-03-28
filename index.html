@@ -13,6 +13,14 @@
   --cream: #f5f0e8; --dark: #0a0a0a; --card-bg: #fdfaf4;
   --red: #c0392b; --blk: #1a1a1a;
 }
+/* Themes */
+body.theme-blue { --felt:#1a3a5c; --felt-light:#1e4a78; --felt-dark:#0f2239; }
+body.theme-purple { --felt:#2d1b4e; --felt-light:#3d2466; --felt-dark:#1a0f30; }
+body.theme-red { --felt:#4a1a1a; --felt-light:#622222; --felt-dark:#2e0f0f; }
+body.theme-black { --felt:#1a1a1a; --felt-light:#252525; --felt-dark:#0f0f0f; }
+.theme-btn { width:28px; height:28px; border-radius:50%; border:2px solid rgba(255,255,255,.25); cursor:pointer; transition:all .2s; }
+.theme-btn:hover,.theme-btn.on { border-color:var(--gold); transform:scale(1.15); }
+.theme-row { display:flex; gap:8px; align-items:center; }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:radial-gradient(ellipse at center,#1a1a2e 0%,#0a0a0a 100%); color:var(--cream); font-family:'Crimson Pro',serif; min-height:100vh; overflow-x:hidden; }
 
@@ -70,19 +78,19 @@ select option { background:#1a1a1a; }
 hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 0; }
 
 /* GAME TABLE */
-#game-screen { flex-direction:column; background:var(--felt-dark); }
+#game-screen { flex-direction:column; background:var(--felt-dark); align-items:stretch; }
 .tbar { display:flex; align-items:center; justify-content:space-between; padding:.55rem 1.2rem; background:rgba(0,0,0,.45); border-bottom:1px solid rgba(201,168,76,.15); }
 .tbar-code { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:rgba(201,168,76,.5); }
 .tbar-name { font-family:'Playfair Display',serif; font-size:1rem; color:var(--gold); }
 .tbar-chips { font-family:'JetBrains Mono',monospace; font-size:.78rem; }
 .tbar-chips span { color:var(--gold); font-weight:600; }
-.felt-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.felt-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; align-items:center; justify-content:flex-start; }
 
 /* OVAL */
-.oval-wrap { position:relative; display:flex; justify-content:center; margin:1.5rem auto 0; width:min(900px,98vw); }
-.oval { position:relative; width:100%; height:min(400px,50vw); background:radial-gradient(ellipse at center,var(--felt-light) 0%,var(--felt) 58%,var(--felt-dark) 100%); border-radius:50%; border:8px solid #2d1a00; box-shadow:0 0 0 3px var(--gold-dark),0 10px 40px rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; flex-direction:column; }
+.oval-wrap { position:relative; display:flex; justify-content:center; margin:1rem auto 0; width:min(700px,96vw); }
+.oval { position:relative; width:100%; height:min(320px,45vw); background:radial-gradient(ellipse at center,var(--felt-light) 0%,var(--felt) 58%,var(--felt-dark) 100%); border-radius:50%; border:8px solid #2d1a00; box-shadow:0 0 0 3px var(--gold-dark),0 10px 40px rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; flex-direction:column; }
 .oval::before { content:''; position:absolute; inset:12px; border-radius:50%; border:1px solid rgba(201,168,76,.1); }
-.seats-wrap { position:absolute; inset:-80px; pointer-events:none; }
+.seats-wrap { position:absolute; inset:-65px; pointer-events:none; }
 .seat { position:absolute; display:flex; flex-direction:column; align-items:center; gap:.18rem; pointer-events:all; transform:translate(-50%,-50%); }
 .av { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#2c3e50,#1a252f); border:2px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:var(--cream); font-family:'Playfair Display',serif; transition:all .3s; position:relative; }
 .av.myturn { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,.3),0 0 20px rgba(201,168,76,.4); animation:pg 1.5s ease-in-out infinite; }
@@ -105,24 +113,21 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .phase-lbl { font-family:'JetBrains Mono',monospace; font-size:.58rem; text-transform:uppercase; letter-spacing:.15em; color:rgba(201,168,76,.42); }
 
 /* Cards */
-.card { width:52px; height:74px; background:var(--card-bg); border-radius:5px; border:1px solid rgba(0,0,0,.2); display:flex; align-items:center; justify-content:center; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,.4); flex-direction:column; gap:0; line-height:1; }
-.card.sm { width:38px; height:54px; }
-.card .cr { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1.05em; }
-.card .cs { font-size:1.15em; line-height:1; }
-.card.red .cr,.card.red .cs { color:#c0392b; }
-.card.blk .cr,.card.blk .cs { color:#1a1a1a; }
-.card.diam .cr,.card.diam .cs { color:#2980b9; }
-.card.club .cr,.card.club .cs { color:#27ae60; }
+.card { width:44px; height:63px; background:var(--card-bg); border-radius:5px; border:1px solid rgba(0,0,0,.2); display:flex; align-items:center; justify-content:center; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,.4); flex-direction:column; gap:0; line-height:1; }
+.card.sm { width:32px; height:46px; }
+.card .cr { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.95em; }
+.card .cs { font-size:1em; line-height:1; }
+.card.red .cr { color:var(--red); } .card.blk .cr { color:var(--blk); }
 .card.down { background:linear-gradient(135deg,#1a1a6e 25%,#2e2e9e 100%); border:1px solid rgba(100,100,200,.3); }
 .card.down::after { content:'🂠'; font-size:1.6rem; opacity:.3; color:white; }
 .card.ph { background:rgba(255,255,255,.04); border:1px dashed rgba(201,168,76,.15); box-shadow:none; }
 
 /* Hand panel */
-.hand-panel { margin:.5rem 1rem .3rem; background:rgba(0,0,0,.4); border:1px solid rgba(201,168,76,.16); border-radius:10px; padding:.8rem 1.2rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+.hand-panel { margin:.45rem 1rem .25rem; background:rgba(0,0,0,.4); border:1px solid rgba(201,168,76,.16); border-radius:10px; padding:.6rem .85rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
 .hole-cards { display:flex; gap:5px; }
 .hr-wrap { flex:1; min-width:130px; }
 .hr-lbl { font-family:'JetBrains Mono',monospace; font-size:.55rem; text-transform:uppercase; letter-spacing:.1em; color:rgba(201,168,76,.5); }
-.hr-name { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--gold); font-weight:700; }
+.hr-name { font-family:'Playfair Display',serif; font-size:1rem; color:var(--gold); font-weight:700; }
 .hr-desc { font-size:.7rem; color:rgba(245,240,232,.5); font-style:italic; }
 
 /* Log */
@@ -165,17 +170,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .spinner { width:30px; height:30px; border:3px solid rgba(201,168,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; margin:1rem auto; }
 @keyframes spin { to{transform:rotate(360deg)} }
 
-.hands-btn { position:fixed; bottom:90px; right:16px; width:40px; height:40px; border-radius:50%; background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.4); color:var(--gold); font-size:1.2rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:800; transition:all .2s; }
-.hands-btn:hover { background:rgba(201,168,76,.3); }
-.hands-modal { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:1100; display:flex; align-items:center; justify-content:center; padding:1rem; }
-.hands-inner { background:linear-gradient(135deg,#1a1a1a,#0f0f0f); border:1px solid rgba(201,168,76,.35); border-radius:16px; padding:1.5rem; max-width:500px; width:100%; max-height:90vh; overflow-y:auto; }
-.hands-inner h3 { font-family:'Playfair Display',serif; color:var(--gold); font-size:1.3rem; margin-bottom:1rem; text-align:center; }
-.hand-row { display:flex; align-items:center; gap:.75rem; padding:.5rem 0; border-bottom:1px solid rgba(201,168,76,.07); }
-.hand-row:last-child { border-bottom:none; }
-.hand-rank { font-family:'JetBrains Mono',monospace; font-size:.6rem; color:rgba(201,168,76,.5); width:18px; text-align:center; }
-.hand-name { font-family:'Playfair Display',serif; font-size:.95rem; color:var(--gold); min-width:130px; }
-.hand-ex { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:rgba(245,240,232,.5); }
-.hands-close { width:100%; margin-top:1rem; padding:.6rem; background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.3); border-radius:8px; color:var(--gold); font-family:'JetBrains Mono',monospace; font-size:.72rem; cursor:pointer; }
 @media(max-width:600px){
   .oval{height:min(250px,50vw);}
   .card{width:32px;height:46px;font-size:.75rem;}
@@ -259,7 +253,16 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
   <div class="tbar">
     <div class="tbar-code" id="g-code"></div>
     <div class="tbar-name" id="g-name"></div>
+    <div style="display:flex;align-items:center;gap:10px">
+    <div class="theme-row">
+      <button class="theme-btn on" style="background:#1a4a2e" onclick="setTheme('')" title="Verde"></button>
+      <button class="theme-btn" style="background:#1a3a5c" onclick="setTheme('blue')" title="Azul"></button>
+      <button class="theme-btn" style="background:#2d1b4e" onclick="setTheme('purple')" title="Roxo"></button>
+      <button class="theme-btn" style="background:#4a1a1a" onclick="setTheme('red')" title="Vermelho"></button>
+      <button class="theme-btn" style="background:#1a1a1a" onclick="setTheme('black')" title="Preto"></button>
+    </div>
     <div class="tbar-chips">Fichas: <span id="g-chips">0</span></div>
+  </div>
   </div>
   <div class="felt-wrap">
     <div class="oval-wrap">
@@ -296,8 +299,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
   </div>
 </div>
 
-<button class="hands-btn" id="hands-btn" style="display:none" onclick="toggleHands()" title="Mãos do Poker">?</button>
-
 <!-- REBUY -->
 <div id="rebuy-ov" class="ov" style="display:none">
   <div class="ov-card">
@@ -317,24 +318,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
     <div class="win-amt" id="win-amt"></div>
     <div class="win-hand" id="win-hand"></div>
     <div class="win-cd">Próxima mão em <span id="win-cd">5</span>s…</div>
-  </div>
-</div>
-
-<!-- HANDS REFERENCE -->
-<div id="hands-modal" class="hands-modal" style="display:none" onclick="if(event.target===this)toggleHands()">
-  <div class="hands-inner">
-    <h3>♠ Mãos do Poker</h3>
-    <div class="hand-row"><span class="hand-rank">1</span><span class="hand-name">High Card</span><span class="hand-ex">A K Q J 9 — carta mais alta</span></div>
-    <div class="hand-row"><span class="hand-rank">2</span><span class="hand-name">Um Par</span><span class="hand-ex">A A K Q J — dois iguais</span></div>
-    <div class="hand-row"><span class="hand-rank">3</span><span class="hand-name">Dois Pares</span><span class="hand-ex">A A K K Q — dois pares</span></div>
-    <div class="hand-row"><span class="hand-rank">4</span><span class="hand-name">Trinca</span><span class="hand-ex">A A A K Q — três iguais</span></div>
-    <div class="hand-row"><span class="hand-rank">5</span><span class="hand-name">Sequência</span><span class="hand-ex">5 6 7 8 9 — sequência</span></div>
-    <div class="hand-row"><span class="hand-rank">6</span><span class="hand-name">Flush</span><span class="hand-ex">A K T 7 2 ♠ — mesmo naipe</span></div>
-    <div class="hand-row"><span class="hand-rank">7</span><span class="hand-name">Full House</span><span class="hand-ex">A A A K K — trinca + par</span></div>
-    <div class="hand-row"><span class="hand-rank">8</span><span class="hand-name">Quadra</span><span class="hand-ex">A A A A K — quatro iguais</span></div>
-    <div class="hand-row"><span class="hand-rank">9</span><span class="hand-name">Straight Flush</span><span class="hand-ex">5 6 7 8 9 ♥ — seq + naipe</span></div>
-    <div class="hand-row"><span class="hand-rank">10</span><span class="hand-name">Royal Flush</span><span class="hand-ex">A K Q J T ♠ — a melhor mão!</span></div>
-    <button class="hands-close" onclick="toggleHands()">Fechar</button>
   </div>
 </div>
 
@@ -583,7 +566,6 @@ window.leaveTable = async () => {
   if(cdTimer)clearInterval(cdTimer);
   document.getElementById('rebuy-ov').style.display='none';
   document.getElementById('win-ov').style.display='none';
-  document.getElementById('hands-btn').style.display='none';
   show('setup-screen');
 };
 
@@ -597,9 +579,8 @@ function onStateChange(state){
     return;
   }
   show('game-screen');
-  document.getElementById('hands-btn').style.display='flex';
   renderTable(state);
-  if(me&&me.chips<=0&&!me.allIn&&!me.folded&&state.phase==='waiting_next'){
+  if(me&&me.chips<=0&&!me.folded&&state.phase!=='waiting'&&state.phase!=='waiting_next'){
     document.getElementById('rebuy-ov').style.display='flex';
   }
 }
@@ -753,11 +734,20 @@ function showWinner(name,amt,hand,nextAt){
 function mkCard(card,sm){
   const d=document.createElement('div');
   if(!card){d.className='card ph'+(sm?' sm':'');return d;}
-  d.className='card '+(SC[card.s]||'blk')+(sm?' sm':'');
-  d.innerHTML='<span class="cr">'+card.r+'</span><span class="cs">'+card.s+'</span>';
+  const cls=SC[card.s]||'blk';
+  d.className='card '+cls+(sm?' sm':'');
+  const r=card.r==='T'?'10':card.r;
+  d.innerHTML=
+    '<div class="ctop"><span class="cr">'+r+'</span><span class="cs">'+card.s+'</span></div>'+
+    '<div class="cmid">'+card.s+'</div>'+
+    '<div class="cbot"><span class="cr">'+r+'</span><span class="cs">'+card.s+'</span></div>';
   return d;
 }
-function mkDown(sm){const d=document.createElement('div');d.className='card down'+(sm?' sm':'');return d;}
+function mkDown(sm){
+  const d=document.createElement('div');
+  d.className='card down'+(sm?' sm':'');
+  return d;
+}
 
 function renderComm(comm){
   const c=document.getElementById('comm-cards');c.innerHTML='';
@@ -800,8 +790,12 @@ function renderSeats(state){
 }
 
 function seatPos(n,W,H){
-  const rx=W/2+40,ry=H/2+50,pos=[];
-  for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;pos.push({x:rx*Math.cos(a),y:ry*Math.sin(a)});}
+  // i=0 is always "me" at bottom center, others go clockwise
+  const rx=W/2+10,ry=H/2+10,pos=[];
+  for(let i=0;i<n;i++){
+    const a=(i/n)*2*Math.PI+Math.PI/2;
+    pos.push({x:rx*Math.cos(a),y:ry*Math.sin(a)});
+  }
   return pos;
 }
 
@@ -843,11 +837,6 @@ function renderActions(state,me){
     ${me.chips>call?`<button class="abtn ar" onclick="openRaise(${minR},${me.chips+me.bet})">Raise</button>`:''}
     <button class="abtn aai" onclick="doAction('allin')">All In</button>`;
 }
-
-window.toggleHands = () => {
-  const m=document.getElementById('hands-modal');
-  m.style.display=m.style.display==='none'?'flex':'none';
-};
 
 window.openRaise = (mn,mx) => {
   raiseOpen=!raiseOpen;
