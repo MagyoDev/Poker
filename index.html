@@ -312,6 +312,9 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
   </div>
 </div>
 
+<script>
+window.__FB__ = /* FIREBASE_CONFIG_PLACEHOLDER */null;
+</script>
 <script type="module">
 // ─── Firebase SDK (ESM from CDN) ───────────────────────────────────────────
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -343,7 +346,7 @@ function initFB(url, apiKey, projectId) {
 }
 
 function tryAutoInit() {
-  const cfg = __FIREBASE_CONFIG__;
+  const cfg = window.__FB__;
   if (cfg && cfg.apiKey) {
     initFB(cfg.databaseURL, cfg.apiKey, cfg.projectId);
   }
@@ -433,7 +436,13 @@ function cmpArr(a,b){for(let i=0;i<Math.min(a.length,b.length);i++)if(a[i]!==b[i
 function combos(arr,k){if(k===0)return[[]];if(arr.length<k)return[];const[f,...r]=arr;return[...combos(r,k-1).map(c=>[f,...c]),...combos(r,k)];}
 function bestHand(hole,comm){
   const all=[...hole,...comm];
-  if(all.length<5){const rank=handRank(all.length>=2?all:[...all]);return{rank,name:HNAMES[rank[0]],desc:HDESCS[rank[0]]};}
+  if(all.length<5){
+    if(all.length<2)return{name:'—',desc:''};
+    const rc={};for(const c of all)rc[c.r]=(rc[c.r]||0)+1;
+    const counts=Object.values(rc).sort((a,b)=>b-a);
+    if(counts[0]===2)return{name:'Um Par',desc:'Par nas cartas da mão'};
+    return{name:'High Card',desc:'Sem combinação ainda'};
+  }
   let best=null;
   for(const c of combos(all,5)){const r=handRank(c);if(!best||r[0]>best[0]||(r[0]===best[0]&&cmpArr(r[1],best[1])>0))best=r;}
   return{rank:best,name:HNAMES[best[0]],desc:HDESCS[best[0]]};
@@ -623,12 +632,11 @@ function advanceGame(state){
     state.phase='waiting_next';state.nextHandAt=Date.now()+6500;return;
   }
   const active=state.players.filter(p=>!p.folded&&!p.allIn);
-  if(active.length===0){nextStreet(state);return;}
   const allActed=active.every(p=>state.actedThisRound.includes(p.id)&&p.bet===state.currentBet);
   if(!allActed){
     let next=(state.activePlayerIdx+1)%state.players.length,t=0;
     while((state.players[next].folded||state.players[next].allIn)&&t<state.players.length){next=(next+1)%state.players.length;t++;}
-    if(t>=state.players.length)nextStreet(state);
+    if(t>=state.players.length||active.length===0)nextStreet(state);
     else state.activePlayerIdx=next;
     return;
   }
@@ -675,8 +683,8 @@ function renderTable(state){
   const phases={preflop:'Pré-Flop',flop:'Flop',turn:'Turn',river:'River',waiting_next:'Fim da Mão',waiting:'Aguardando'};
   document.getElementById('phase-lbl').textContent=phases[state.phase]||'';
   renderComm(state.community);
-  renderSeats(state);
   renderMyCards(me,state);
+  requestAnimationFrame(()=>renderSeats(state));
   renderActions(state,me);
   const log=state.log||[];
   document.getElementById('glog').textContent=log[log.length-1]||'';
@@ -765,9 +773,15 @@ function renderMyCards(me,state){
   const c=document.getElementById('hole-cards');c.innerHTML='';
   if(me.holeCards?.length===2){
     c.appendChild(mkCard(me.holeCards[0]));c.appendChild(mkCard(me.holeCards[1]));
-    const h=bestHand(me.holeCards,state.community||[]);
-    document.getElementById('hr-name').textContent=h.name;
-    document.getElementById('hr-desc').textContent=h.desc;
+    const comm=state.community||[];
+    if(comm.length>=3){
+      const h=bestHand(me.holeCards,comm);
+      document.getElementById('hr-name').textContent=h.name;
+      document.getElementById('hr-desc').textContent=h.desc;
+    } else {
+      document.getElementById('hr-name').textContent='Pré-Flop';
+      document.getElementById('hr-desc').textContent='Aguardando cartas comunitárias';
+    }
   } else {
     c.appendChild(mkDown());c.appendChild(mkDown());
     document.getElementById('hr-name').textContent='—';
