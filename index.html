@@ -343,7 +343,7 @@ function initFB(url, apiKey, projectId) {
 }
 
 function tryAutoInit() {
-  const INJECTED = '__FIREBASE_CONFIG__';
+  const INJECTED = `__FIREBASE_CONFIG__`;
   if (INJECTED && !INJECTED.startsWith('__')) {
     try {
       const cfg = JSON.parse(INJECTED);

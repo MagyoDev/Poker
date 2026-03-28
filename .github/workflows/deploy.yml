@@ -20,7 +20,7 @@ jobs:
 
       - name: Inject Firebase config
         run: |
-          sed -i "s|'__FIREBASE_CONFIG__'|'${{ secrets.FIREBASE_CONFIG }}'|g" index.html
+          sed -i "s|__FIREBASE_CONFIG__|${{ secrets.FIREBASE_CONFIG }}|g" index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
