@@ -343,12 +343,9 @@ function initFB(url, apiKey, projectId) {
 }
 
 function tryAutoInit() {
-  const INJECTED = `__FIREBASE_CONFIG__`;
-  if (INJECTED && !INJECTED.startsWith('__')) {
-    try {
-      const cfg = JSON.parse(INJECTED);
-      initFB(cfg.databaseURL, cfg.apiKey, cfg.projectId);
-    } catch(e) { console.warn('Injected config invalid', e); }
+  const cfg = __FIREBASE_CONFIG__;
+  if (cfg && cfg.apiKey) {
+    initFB(cfg.databaseURL, cfg.apiKey, cfg.projectId);
   }
 }
 
