@@ -312,9 +312,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
   </div>
 </div>
 
-<script>
-window.__FB__ = /* FIREBASE_CONFIG_PLACEHOLDER */null;
-</script>
 <script type="module">
 // ─── Firebase SDK (ESM from CDN) ───────────────────────────────────────────
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -346,7 +343,7 @@ function initFB(url, apiKey, projectId) {
 }
 
 function tryAutoInit() {
-  const cfg = window.__FB__;
+  const cfg = __FIREBASE_CONFIG__;
   if (cfg && cfg.apiKey) {
     initFB(cfg.databaseURL, cfg.apiKey, cfg.projectId);
   }
@@ -597,6 +594,10 @@ function postBlind(state,idx,amount){
 window.doAction = async (action, amount) => {
   const state=await dbGet('tables/'+code);
   if(!state)return;
+  if(!state.actedThisRound)state.actedThisRound=[];
+  if(!state.log)state.log=[];
+  if(!state.community)state.community=[];
+  if(!state.deck)state.deck=[];
   const me=state.players.find(p=>p.id===myId);
   if(!me||state.activePlayerIdx<0)return;
   if(state.players[state.activePlayerIdx].id!==myId)return;
@@ -612,6 +613,8 @@ window.doAction = async (action, amount) => {
 };
 
 function advanceGame(state){
+  if(!state.actedThisRound)state.actedThisRound=[];
+  if(!state.log)state.log=[];
   const nf=state.players.filter(p=>!p.folded);
   if(nf.length===1){
     const w=nf[0];w.chips+=state.pot;
@@ -620,11 +623,12 @@ function advanceGame(state){
     state.phase='waiting_next';state.nextHandAt=Date.now()+6500;return;
   }
   const active=state.players.filter(p=>!p.folded&&!p.allIn);
+  if(active.length===0){nextStreet(state);return;}
   const allActed=active.every(p=>state.actedThisRound.includes(p.id)&&p.bet===state.currentBet);
   if(!allActed){
     let next=(state.activePlayerIdx+1)%state.players.length,t=0;
     while((state.players[next].folded||state.players[next].allIn)&&t<state.players.length){next=(next+1)%state.players.length;t++;}
-    if(t>=state.players.length||active.length===0)nextStreet(state);
+    if(t>=state.players.length)nextStreet(state);
     else state.activePlayerIdx=next;
     return;
   }
@@ -632,6 +636,9 @@ function advanceGame(state){
 }
 
 function nextStreet(state){
+  if(!state.log)state.log=[];
+  if(!state.community)state.community=[];
+  if(!state.deck)state.deck=[];
   for(const p of state.players)p.bet=0;
   state.currentBet=0;state.actedThisRound=[];
   if(state.phase==='preflop'){state.community.push(state.deck.pop(),state.deck.pop(),state.deck.pop());state.phase='flop';state.log.push('Flop: '+state.community.map(c=>c.r+c.s).join(' '));}
@@ -643,6 +650,8 @@ function nextStreet(state){
     if(res){res.player.chips+=state.pot;state.winnerName=res.player.nick;state.winnerAmt=state.pot;state.winnerHand=res.hand.name;state.log.push(res.player.nick+' ganhou '+state.pot+' com '+res.hand.name+'!');}
     state.phase='waiting_next';state.nextHandAt=Date.now()+6500;return;
   }
+  const active=state.players.filter(p=>!p.folded&&!p.allIn);
+  if(active.length===0){nextStreet(state);return;}
   const n=state.players.length;let next=(state.dealerIdx+1)%n,t=0;
   while((state.players[next].folded||state.players[next].allIn)&&t<n){next=(next+1)%n;t++;}
   state.activePlayerIdx=next;
