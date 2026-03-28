@@ -20,7 +20,17 @@ jobs:
 
       - name: Inject Firebase config
         run: |
-          sed -i "s|__FIREBASE_CONFIG__|${{ secrets.FIREBASE_CONFIG }}|g" index.html
+          python3 - <<'EOF'
+          import os
+          cfg = os.environ['FIREBASE_CONFIG']
+          with open('index.html', 'r') as f:
+              html = f.read()
+          html = html.replace('/* FIREBASE_CONFIG_PLACEHOLDER */null', cfg)
+          with open('index.html', 'w') as f:
+              f.write(html)
+          EOF
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
