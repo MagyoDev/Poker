@@ -87,10 +87,10 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .felt-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 
 /* OVAL */
-.oval-wrap { position:relative; display:flex; justify-content:center; margin:2rem auto 0; width:min(800px,94vw); }
-.oval { position:relative; width:100%; height:min(370px,48vw); background:radial-gradient(ellipse at center,var(--felt-light) 0%,var(--felt) 58%,var(--felt-dark) 100%); border-radius:50%; border:8px solid #2d1a00; box-shadow:0 0 0 3px var(--gold-dark),0 10px 40px rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; flex-direction:column; }
+.oval-wrap { position:relative; display:flex; justify-content:center; margin:1rem auto 0; width:min(700px,96vw); }
+.oval { position:relative; width:100%; height:min(320px,45vw); background:radial-gradient(ellipse at center,var(--felt-light) 0%,var(--felt) 58%,var(--felt-dark) 100%); border-radius:50%; border:8px solid #2d1a00; box-shadow:0 0 0 3px var(--gold-dark),0 10px 40px rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; flex-direction:column; }
 .oval::before { content:''; position:absolute; inset:12px; border-radius:50%; border:1px solid rgba(201,168,76,.1); }
-.seats-wrap { position:absolute; inset:-72px; pointer-events:none; }
+.seats-wrap { position:absolute; inset:-65px; pointer-events:none; }
 .seat { position:absolute; display:flex; flex-direction:column; align-items:center; gap:.18rem; pointer-events:all; transform:translate(-50%,-50%); }
 .av { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#2c3e50,#1a252f); border:2px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:var(--cream); font-family:'Playfair Display',serif; transition:all .3s; position:relative; }
 .av.myturn { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,.3),0 0 20px rgba(201,168,76,.4); animation:pg 1.5s ease-in-out infinite; }
@@ -117,10 +117,7 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .card.sm { width:35px; height:50px; }
 .card .cr { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:1.05em; }
 .card .cs { font-size:1.1em; line-height:1; }
-.card.red .cr,.card.red .cs { color:#d32f2f; }
-.card.blk .cr,.card.blk .cs { color:#1a1a1a; }
-.card.diam .cr,.card.diam .cs { color:#1565c0; }
-.card.club .cr,.card.club .cs { color:#2e7d32; }
+.card.red .cr { color:var(--red); } .card.blk .cr { color:var(--blk); }
 .card.down { background:linear-gradient(135deg,#1a1a6e 25%,#2e2e9e 100%); border:1px solid rgba(100,100,200,.3); }
 .card.down::after { content:'🂠'; font-size:1.6rem; opacity:.3; color:white; }
 .card.ph { background:rgba(255,255,255,.04); border:1px dashed rgba(201,168,76,.15); box-shadow:none; }
@@ -365,21 +362,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 
 <script>
 window.__FB__ = /* FIREBASE_CONFIG_PLACEHOLDER */null;
-
-// Funções globais (fora do module para acessar via onclick)
-window.setTheme = function(t) {
-  document.body.className = t ? 'theme-'+t : '';
-  document.querySelectorAll('.theme-btn').forEach(function(b){b.classList.remove('active');});
-  var themes = ['','blue','purple','red','black'];
-  var idx = themes.indexOf(t);
-  var btns = document.querySelectorAll('.theme-btn');
-  if(btns[idx]) btns[idx].classList.add('active');
-};
-
-window.toggleHands = function() {
-  var m = document.getElementById('hands-modal');
-  m.style.display = m.style.display==='none' ? 'flex' : 'none';
-};
 </script>
 <script type="module">
 // ─── Firebase SDK (ESM from CDN) ───────────────────────────────────────────
@@ -478,7 +460,7 @@ window.copyCode = () => {
 // ─── Poker engine ──────────────────────────────────────────────────────────
 const RANKS = ['2','3','4','5','6','7','8','9','T','J','Q','K','A'];
 const SUITS = ['♠','♥','♦','♣'];
-const SC = {'♠':'blk','♣':'club','♥':'red','♦':'diam'};
+const SC = {'♠':'blk','♣':'blk','♥':'red','♦':'red'};
 const HNAMES = ['High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
 const HDESCS = ['Nenhuma combinação','Um par de cartas iguais','Dois pares','Três cartas iguais','Sequência','Cinco cartas do mesmo naipe','Trio + Par','Quatro cartas iguais','Sequência do mesmo naipe','Sequência real do mesmo naipe'];
 
@@ -502,23 +484,32 @@ function cmpArr(a,b){for(let i=0;i<Math.min(a.length,b.length);i++)if(a[i]!==b[i
 function combos(arr,k){if(k===0)return[[]];if(arr.length<k)return[];const[f,...r]=arr;return[...combos(r,k-1).map(c=>[f,...c]),...combos(r,k)];}
 function bestHand(hole,comm){
   const all=[...hole,...comm];
+  // Always compute a real rank so determineWinner never gets undefined
   if(all.length<5){
-    if(all.length<2)return{name:'—',desc:''};
-    const rc={};for(const c of all)rc[c.r]=(rc[c.r]||0)+1;
-    const counts=Object.values(rc).sort((a,b)=>b-a);
-    if(counts[0]===2)return{name:'Um Par',desc:'Par nas cartas da mão'};
-    return{name:'High Card',desc:'Sem combinação ainda'};
+    // Pad with dummy sort using available cards
+    if(all.length<2)return{rank:[0,[0]],name:'High Card',desc:'Sem combinação'};
+    const padded=all.length>=5?all:all;
+    const r2=handRank(all.length>=2?[all[0],all[1]]:all);
+    return{rank:r2,name:HNAMES[r2[0]],desc:HDESCS[r2[0]]};
   }
   let best=null;
   for(const c of combos(all,5)){const r=handRank(c);if(!best||r[0]>best[0]||(r[0]===best[0]&&cmpArr(r[1],best[1])>0))best=r;}
   return{rank:best,name:HNAMES[best[0]],desc:HDESCS[best[0]]};
 }
+function bestHandDisplay(hole,comm){
+  // For UI only — shows preflop message when <3 community cards
+  const all=[...hole,...comm];
+  if(comm.length<3)return{name:'Pré-Flop',desc:'Aguardando cartas comunitárias'};
+  return bestHand(hole,comm);
+}
 function determineWinner(players,comm){
+  const eligible=players.filter(p=>!p.folded&&p.holeCards&&p.holeCards.length===2);
+  if(eligible.length===0)return null;
   let best=null;
-  for(const p of players){
-    if(p.folded)continue;
-    const h=bestHand(p.holeCards,comm);
-    if(!best||h.rank[0]>best.rank[0]||(h.rank[0]===best.rank[0]&&cmpArr(h.rank[1],best.rank[1])>0))best={player:p,hand:h};
+  for(const p of eligible){
+    const h=bestHand(p.holeCards,comm||[]);
+    if(!best||h.rank[0]>best.hand.rank[0]||(h.rank[0]===best.hand.rank[0]&&cmpArr(h.rank[1],best.hand.rank[1])>0))
+      best={player:p,hand:h};
   }
   return best;
 }
@@ -691,44 +682,109 @@ window.doAction = async (action, amount) => {
 function advanceGame(state){
   if(!state.actedThisRound)state.actedThisRound=[];
   if(!state.log)state.log=[];
-  const nf=state.players.filter(p=>!p.folded);
-  if(nf.length===1){
-    const w=nf[0];w.chips+=state.pot;
-    state.winnerName=w.nick;state.winnerAmt=state.pot;state.winnerHand='Ganhou (todos desistiram)';
+  if(!state.community)state.community=[];
+  if(!state.deck)state.deck=[];
+
+  // Only 1 not folded → instant win
+  const notFolded=state.players.filter(p=>!p.folded);
+  if(notFolded.length===1){
+    const w=notFolded[0];
+    w.chips+=state.pot;
+    state.winnerName=w.nick;state.winnerAmt=state.pot;
+    state.winnerHand='Ganhou (todos desistiram)';
     state.log.push(w.nick+' ganhou '+state.pot+'!');
-    state.phase='waiting_next';state.nextHandAt=Date.now()+6500;return;
-  }
-  const active=state.players.filter(p=>!p.folded&&!p.allIn);
-  const allActed=active.every(p=>state.actedThisRound.includes(p.id)&&p.bet===state.currentBet);
-  if(!allActed){
-    let next=(state.activePlayerIdx+1)%state.players.length,t=0;
-    while((state.players[next].folded||state.players[next].allIn)&&t<state.players.length){next=(next+1)%state.players.length;t++;}
-    if(t>=state.players.length||active.length===0)nextStreet(state);
-    else state.activePlayerIdx=next;
+    state.phase='waiting_next';state.nextHandAt=Date.now()+7000;
     return;
   }
-  nextStreet(state);
+
+  // Players that can still act (not folded, not all-in)
+  const canAct=state.players.filter(p=>!p.folded&&!p.allIn);
+
+  // If no one can act, run out the board
+  if(canAct.length===0){
+    nextStreet(state);
+    return;
+  }
+
+  // Check if everyone who can act has acted and matched the bet
+  const allDone=canAct.every(p=>
+    state.actedThisRound.includes(p.id) && p.bet===state.currentBet
+  );
+
+  if(allDone){
+    nextStreet(state);
+    return;
+  }
+
+  // Advance to next player who can act
+  let next=(state.activePlayerIdx+1)%state.players.length;
+  let tries=0;
+  while(tries<state.players.length){
+    const np=state.players[next];
+    if(!np.folded&&!np.allIn) break;
+    next=(next+1)%state.players.length;
+    tries++;
+  }
+  if(tries>=state.players.length){
+    // No one left to act
+    nextStreet(state);
+  } else {
+    state.activePlayerIdx=next;
+  }
 }
 
 function nextStreet(state){
   if(!state.log)state.log=[];
   if(!state.community)state.community=[];
   if(!state.deck)state.deck=[];
+
+  // Reset bets for new street
   for(const p of state.players)p.bet=0;
   state.currentBet=0;state.actedThisRound=[];
-  if(state.phase==='preflop'){state.community.push(state.deck.pop(),state.deck.pop(),state.deck.pop());state.phase='flop';state.log.push('Flop: '+state.community.map(c=>c.r+c.s).join(' '));}
-  else if(state.phase==='flop'){state.community.push(state.deck.pop());state.phase='turn';state.log.push('Turn: '+state.community[3].r+state.community[3].s);}
-  else if(state.phase==='turn'){state.community.push(state.deck.pop());state.phase='river';state.log.push('River: '+state.community[4].r+state.community[4].s);}
-  else if(state.phase==='river'){
-    const nf=state.players.filter(p=>!p.folded);
-    const res=determineWinner(nf,state.community);
-    if(res){res.player.chips+=state.pot;state.winnerName=res.player.nick;state.winnerAmt=state.pot;state.winnerHand=res.hand.name;state.log.push(res.player.nick+' ganhou '+state.pot+' com '+res.hand.name+'!');}
-    state.phase='waiting_next';state.nextHandAt=Date.now()+6500;return;
+
+  if(state.phase==='preflop'){
+    state.community.push(state.deck.pop(),state.deck.pop(),state.deck.pop());
+    state.phase='flop';
+    state.log.push('Flop: '+state.community.map(c=>c.r+c.s).join(' '));
+  } else if(state.phase==='flop'){
+    state.community.push(state.deck.pop());
+    state.phase='turn';
+    state.log.push('Turn: '+state.community[3].r+state.community[3].s);
+  } else if(state.phase==='turn'){
+    state.community.push(state.deck.pop());
+    state.phase='river';
+    state.log.push('River: '+state.community[4].r+state.community[4].s);
+  } else if(state.phase==='river'){
+    // Showdown
+    const eligible=state.players.filter(p=>!p.folded);
+    const res=determineWinner(eligible,state.community);
+    if(res){
+      res.player.chips+=state.pot;
+      state.winnerName=res.player.nick;
+      state.winnerAmt=state.pot;
+      state.winnerHand=res.hand.name;
+      state.log.push(res.player.nick+' ganhou '+state.pot+' com '+res.hand.name+'!');
+    }
+    state.phase='waiting_next';state.nextHandAt=Date.now()+7000;
+    return;
   }
-  const active=state.players.filter(p=>!p.folded&&!p.allIn);
-  if(active.length===0){nextStreet(state);return;}
-  const n=state.players.length;let next=(state.dealerIdx+1)%n,t=0;
-  while((state.players[next].folded||state.players[next].allIn)&&t<n){next=(next+1)%n;t++;}
+
+  // If everyone is all-in keep running streets immediately
+  const canAct=state.players.filter(p=>!p.folded&&!p.allIn);
+  if(canAct.length===0){
+    nextStreet(state);
+    return;
+  }
+
+  // Find first player after dealer who can act
+  const n=state.players.length;
+  let next=(state.dealerIdx+1)%n;
+  let tries=0;
+  while(tries<n){
+    if(!state.players[next].folded&&!state.players[next].allIn) break;
+    next=(next+1)%n;
+    tries++;
+  }
   state.activePlayerIdx=next;
 }
 
@@ -764,7 +820,7 @@ function renderTable(state){
 
 function showWinner(name,amt,hand,nextAt){
   document.getElementById('win-name').textContent='🏆 '+name;
-  document.getElementById('win-amt').textContent='+'+amt.toLocaleString()+' fichas';
+  document.getElementById('win-amt').textContent='+'+amt+' fichas';
   document.getElementById('win-hand').textContent=hand;
   document.getElementById('win-ov').style.display='flex';
   if(cdTimer)clearInterval(cdTimer);
@@ -785,8 +841,7 @@ function mkCard(card,sm){
   const d=document.createElement('div');
   if(!card){d.className='card ph'+(sm?' sm':'');return d;}
   d.className='card '+(SC[card.s]||'blk')+(sm?' sm':'');
-  const r=card.r==='T'?'10':card.r;
-  d.innerHTML='<span class="cr">'+r+'</span><span class="cs">'+card.s+'</span>';
+  d.innerHTML='<span class="cr">'+card.r+'</span><span class="cs">'+card.s+'</span>';
   return d;
 }
 function mkDown(sm){const d=document.createElement('div');d.className='card down'+(sm?' sm':'');return d;}
@@ -816,13 +871,8 @@ function renderSeats(state){
     let cards='';
     if(isMe&&p.holeCards?.length===2){
       cards='<div class="scards">'+p.holeCards.map(c=>{const el=mkCard(c,true);return el.outerHTML;}).join('')+'</div>';
-    } else if(!isMe&&p.holeCards?.length===2&&state.phase!=='waiting'){
-      if(state.phase==='waiting_next'&&!p.folded){
-        // Revelar cartas no showdown
-        cards='<div class="scards">'+p.holeCards.map(c=>{const el=mkCard(c,true);return el.outerHTML;}).join('')+'</div>';
-      } else {
-        cards='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
-      }
+    } else if(!isMe&&p.holeCards?.length>=2&&state.phase!=='waiting'){
+      cards='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
     }
     let st='';
     if(p.folded)st='<div class="sstatus fold">FOLD</div>';
@@ -848,14 +898,9 @@ function renderMyCards(me,state){
   if(me.holeCards?.length===2){
     c.appendChild(mkCard(me.holeCards[0]));c.appendChild(mkCard(me.holeCards[1]));
     const comm=state.community||[];
-    if(comm.length>=3){
-      const h=bestHand(me.holeCards,comm);
-      document.getElementById('hr-name').textContent=h.name;
-      document.getElementById('hr-desc').textContent=h.desc;
-    } else {
-      document.getElementById('hr-name').textContent='Pré-Flop';
-      document.getElementById('hr-desc').textContent='Aguardando cartas comunitárias';
-    }
+    const h=bestHandDisplay(me.holeCards,comm);
+    document.getElementById('hr-name').textContent=h.name;
+    document.getElementById('hr-desc').textContent=h.desc;
   } else {
     c.appendChild(mkDown());c.appendChild(mkDown());
     document.getElementById('hr-name').textContent='—';
@@ -872,13 +917,17 @@ function renderActions(state,me){
     if(!raiseOpen)document.getElementById('raise-row').style.display='none';
     return;
   }
-  const call=state.currentBet-me.bet;
-  const canCheck=call<=0;
+  const call=Math.min(state.currentBet-me.bet, me.chips); // cap call at available chips
+  const canCheck=(state.currentBet-me.bet)<=0;
+  const canCall=!canCheck&&call>0;
   const minR=state.currentBet+state.config.bb;
+  const canRaise=me.chips>(state.currentBet-me.bet)&&me.chips>0;
   area.innerHTML=`
     <button class="abtn af" onclick="doAction('fold')">Fold</button>
-    ${canCheck?`<button class="abtn ack" onclick="doAction('check')">Check</button>`:`<button class="abtn acl" onclick="doAction('call')">Call ${call}</button>`}
-    ${me.chips>call?`<button class="abtn ar" onclick="openRaise(${minR},${me.chips+me.bet})">Raise</button>`:''}
+    ${canCheck
+      ? `<button class="abtn ack" onclick="doAction('check')">Check</button>`
+      : `<button class="abtn acl" onclick="doAction('call')">Call ${call}</button>`}
+    ${canRaise?`<button class="abtn ar" onclick="openRaise(${minR},${me.chips+me.bet})">Raise</button>`:''}
     <button class="abtn aai" onclick="doAction('allin')">All In</button>`;
 }
 
