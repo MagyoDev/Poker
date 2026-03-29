@@ -232,17 +232,7 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 /* Dealer button: small chip near the seat-info, not on avatar */
 @keyframes pg { 0%,100%{box-shadow:0 0 0 3px rgba(201,168,76,.3),0 0 12px rgba(201,168,76,.3)} 50%{box-shadow:0 0 0 5px rgba(201,168,76,.55),0 0 22px rgba(201,168,76,.6)} }
 
-/* Dealer chip (small white D badge near seat-info) */
-.dealer-chip {
-  display:inline-flex; align-items:center; justify-content:center;
-  width:18px; height:18px; border-radius:50%;
-  background:#fff; color:#111;
-  font-family:'JetBrains Mono',monospace; font-size:.52rem; font-weight:800;
-  border:1.5px solid rgba(0,0,0,.25);
-  box-shadow:0 1px 4px rgba(0,0,0,.5);
-  flex-shrink:0;
-}
-/* Turn indicator arrow below seat when it's their turn */
+/* Turn indicator arrow above seat when it's their turn */
 .turn-arrow {
   width:0; height:0;
   border-left:6px solid transparent;
@@ -366,21 +356,38 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .rlbl { font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--gold); min-width:55px; text-align:right; }
 .rconfirm { padding:.42rem .8rem; background:var(--gold); color:var(--dark); border:none; border-radius:7px; font-family:'JetBrains Mono',monospace; font-size:.68rem; font-weight:700; cursor:pointer; white-space:nowrap; }
 
-/* ── OVERLAYS ── */
+/* ── INLINE WINNER BANNER (inside felt, no popup) ── */
+.winner-banner {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  display:none; flex-direction:column; align-items:center; gap:.4rem;
+  background:rgba(0,0,0,.65); border:1px solid rgba(201,168,76,.4);
+  border-radius:14px; padding:.7rem 1.6rem;
+  backdrop-filter:blur(6px);
+  z-index:30; text-align:center;
+  animation:fi .3s ease;
+  pointer-events:none;
+}
+.winner-banner.show { display:flex; }
+.wb-trophy { font-size:1.5rem; line-height:1; }
+.wb-name { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--gold); font-weight:700; }
+.wb-amt { font-family:'JetBrains Mono',monospace; font-size:.95rem; color:var(--gold-light); }
+.wb-hand { font-size:.72rem; color:rgba(245,240,232,.55); font-style:italic; }
+/* Revealed hole cards shown inside each seat after showdown */
+.seat.revealed .scards .card.down { display:none; }
+/* Show hands toggle button in hand-panel */
+.show-hands-btn {
+  padding:.28rem .7rem;
+  background:rgba(201,168,76,.12); border:1px solid rgba(201,168,76,.3);
+  border-radius:6px; color:var(--gold);
+  font-family:'JetBrains Mono',monospace; font-size:.58rem;
+  cursor:pointer; white-space:nowrap; transition:all .15s;
+}
+.show-hands-btn:hover { background:rgba(201,168,76,.24); }
+.show-hands-btn.on { background:rgba(201,168,76,.28); }
 .ov { position:fixed; inset:0; background:rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(4px); }
 .ov-card { background:linear-gradient(135deg,#1a1a1a,#111); border:1px solid rgba(201,168,76,.4); border-radius:16px; padding:2.5rem; text-align:center; max-width:360px; width:90%; }
 .ov-card h2 { font-family:'Playfair Display',serif; font-size:1.7rem; color:var(--gold); margin-bottom:.75rem; }
 .ov-card p { color:rgba(245,240,232,.6); font-size:.88rem; margin:.75rem 0; }
-.win-ov { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:900; background:rgba(0,0,0,.75); backdrop-filter:blur(5px); animation:fi .35s ease; }
-@keyframes fi { from{opacity:0} to{opacity:1} }
-.win-card { background:linear-gradient(155deg,#1a1800,#2a1f00,#1a1800); border:2px solid var(--gold); border-radius:20px; padding:1.8rem 2.5rem; text-align:center; box-shadow:0 0 80px rgba(201,168,76,.35); animation:si .4s cubic-bezier(.34,1.56,.64,1); max-width:400px; width:92%; }
-@keyframes si { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
-.win-card h2 { font-family:'Playfair Display',serif; font-size:2rem; color:var(--gold); margin-bottom:.25rem; }
-.win-amt { font-family:'JetBrains Mono',monospace; font-size:1.9rem; color:var(--gold-light); }
-.win-hand { font-size:.95rem; color:var(--cream); margin-top:.3rem; font-style:italic; }
-.win-comm { display:flex; gap:.35rem; justify-content:center; margin:.9rem 0; flex-wrap:wrap; }
-.win-close-btn { margin-top:.8rem; padding:.55rem 2.2rem; background:var(--gold); color:var(--dark); border:none; border-radius:9px; font-family:'JetBrains Mono',monospace; font-size:.8rem; font-weight:700; cursor:pointer; }
-.win-close-btn:hover { background:var(--gold-light); }
 .spinner { width:30px; height:30px; border:3px solid rgba(201,168,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; margin:1rem auto; }
 @keyframes spin { to{transform:rotate(360deg)} }
 
@@ -525,6 +532,14 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
       </div>
     </div>
 
+    <!-- Inline winner banner (shown over felt, no popup) -->
+    <div class="winner-banner" id="winner-banner">
+      <div class="wb-trophy">🏆</div>
+      <div class="wb-name" id="wb-name"></div>
+      <div class="wb-amt" id="wb-amt"></div>
+      <div class="wb-hand" id="wb-hand"></div>
+    </div>
+
     <!-- My hand panel -->
     <div class="hand-panel">
       <div class="hole-cards" id="hole-cards"></div>
@@ -533,6 +548,7 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
         <div class="hr-name" id="hr-name">—</div>
         <div class="hr-desc" id="hr-desc"></div>
       </div>
+      <button class="show-hands-btn" id="show-hands-btn" onclick="toggleShowHands()" style="display:none">👁 Revelar</button>
     </div>
 
   </div><!-- /felt-wrap -->
@@ -650,19 +666,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
     <div class="rebuy-amt" id="rejoin-amt">1.000 fichas</div>
     <button class="btn btn-gold" onclick="doRebuy()">Voltar à Mesa</button>
     <button class="btn btn-outline" onclick="leaveTable()">Sair da Mesa</button>
-  </div>
-</div>
-
-<!-- Winner -->
-<div id="win-ov" style="display:none" class="win-ov">
-  <div class="win-card">
-    <div style="font-size:2rem">🏆</div>
-    <h2 id="win-name"></h2>
-    <div class="win-amt" id="win-amt"></div>
-    <div class="win-hand" id="win-hand"></div>
-    <div class="win-comm" id="win-comm"></div>
-    <button class="win-close-btn" onclick="closeWinner()">Continuar →</button>
-    <div style="margin-top:.5rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:rgba(245,240,232,.22);" id="host-note"></div>
   </div>
 </div>
 
@@ -997,7 +1000,7 @@ window.leaveTable=async()=>{
   // Stop YouTube player if running
   try{if(window.mpPlayer)window.mpPlayer.stopVideo();}catch(e){}
   document.getElementById('rejoin-ov').style.display='none';
-  document.getElementById('win-ov').style.display='none';
+  document.getElementById('winner-banner').classList.remove('show');
   showGameUI(false);
   show('setup-screen');
 };
@@ -1125,10 +1128,17 @@ window.doRebuy=async()=>{
   document.getElementById('rejoin-ov').style.display='none';
 };
 
-window.closeWinner=()=>{
-  document.getElementById('win-ov').style.display='none';winnerShown=false;
-  if(isHost)dbGet('tables/'+code).then(st=>{if(!st)return;dealNewHand(st);dbSet('tables/'+code,st);});
+// Toggle showing other players' hole cards (local, client-side only)
+window.toggleShowHands=()=>{
+  showingHands=!showingHands;
+  const btn=document.getElementById('show-hands-btn');
+  btn.classList.toggle('on',showingHands);
+  btn.textContent=showingHands?'🙈 Ocultar':'👁 Revelar';
+  // Re-render seats with current cached state to show/hide cards
+  if(window._lastState)renderSeats(window._lastState);
 };
+
+let showingHands = false;
 
 // ── Render ───────────────────────────────────────────────────────────────────
 function renderTable(state){
@@ -1145,21 +1155,33 @@ function renderTable(state){
   renderActions(state,me);
   const log=state.log||[];
   document.getElementById('glog').textContent=log[log.length-1]||'';
-  document.getElementById('btn-start').style.display=(isHost&&(state.phase==='waiting'||state.phase==='waiting_next'))?'flex':'none';
-  if(state.winnerName&&state.phase==='waiting_next'){
-    if(!winnerShown){winnerShown=true;setTimeout(()=>showWinner(state.winnerName,state.winnerAmt,state.winnerHand,state.winnerComm||[]),900);}
-  }else if(state.phase!=='waiting_next'){winnerShown=false;document.getElementById('win-ov').style.display='none';}
-}
 
-function showWinner(name,amt,hand,comm){
-  document.getElementById('win-name').textContent='🏆 '+name;
-  document.getElementById('win-amt').textContent='+$'+amt.toLocaleString();
-  document.getElementById('win-hand').textContent=hand;
-  const cc=document.getElementById('win-comm');cc.innerHTML='';
-  if(comm&&comm.length)comm.forEach(c=>{cc.appendChild(mkCard(c,false));});
-  document.getElementById('host-note').textContent=isHost?'Você (anfitrião) clique para iniciar a próxima mão.':'Aguardando anfitrião…';
-  document.getElementById('win-ov').style.display='flex';
-  sndWin();
+  const isEnd = state.phase==='waiting_next';
+
+  // Host "next hand" button
+  document.getElementById('btn-start').style.display=
+    (isHost&&(state.phase==='waiting'||isEnd))?'flex':'none';
+
+  // Show-hands button during showdown (everyone can toggle for themselves)
+  const shBtn=document.getElementById('show-hands-btn');
+  shBtn.style.display=isEnd?'inline-flex':'none';
+  if(!isEnd){showingHands=false;shBtn.classList.remove('on');shBtn.textContent='👁 Revelar';}
+
+  // Inline winner banner
+  const banner=document.getElementById('winner-banner');
+  if(state.winnerName&&isEnd){
+    if(!winnerShown){
+      winnerShown=true;
+      document.getElementById('wb-name').textContent=state.winnerName;
+      document.getElementById('wb-amt').textContent='+$'+state.winnerAmt.toLocaleString();
+      document.getElementById('wb-hand').textContent=state.winnerHand||'';
+      banner.classList.add('show');
+      sndWin();
+    }
+  } else if(!isEnd){
+    winnerShown=false;
+    banner.classList.remove('show');
+  }
 }
 
 // ── Card helpers ─────────────────────────────────────────────────────────────
@@ -1200,6 +1222,7 @@ function seatPos(n, W, H) {
 }
 
 function renderSeats(state){
+  window._lastState=state; // cache for toggleShowHands
   const n=state.players.length;
   const wrap=document.getElementById('seats-wrap');
   const rail=document.querySelector('.table-rail');
@@ -1207,25 +1230,30 @@ function renderSeats(state){
   const W=rail.offsetWidth, H=rail.offsetHeight;
   const myIdx=state.players.findIndex(p=>p.id===myId);
   const positions=seatPos(n,W,H);
+  const isEnd=state.phase==='waiting_next';
   let html='';
   state.players.forEach((p,i)=>{
     const rel=(i-myIdx+n)%n;
     const pos=positions[rel];
     const isMe=p.id===myId;
-    const isAct=state.activePlayerIdx===i&&state.phase!=='waiting'&&state.phase!=='waiting_next';
-    const isD=state.dealerIdx===i;
+    const isAct=state.activePlayerIdx===i&&!isEnd&&state.phase!=='waiting';
     let avc='av';
     if(isAct)avc+=' myturn';
     if(p.folded&&!isMe)avc+=' folded';
     if(p.allIn)avc+=' allin';
     if(isMe)avc+=' me';
-    // NO dealer class on avatar — dealer chip shown separately
 
+    // Cards: show mine always; show others' face-up if showingHands at showdown
     let cardsHtml='';
     if(isMe&&p.holeCards?.length===2){
       cardsHtml='<div class="scards">'+p.holeCards.map(c=>mkCard(c,true).outerHTML).join('')+'</div>';
-    }else if(!isMe&&p.holeCards?.length>=2&&state.phase!=='waiting'){
-      cardsHtml='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
+    } else if(!isMe&&p.holeCards?.length===2&&state.phase!=='waiting'){
+      if(isEnd&&showingHands&&!p.folded){
+        // Reveal cards face-up
+        cardsHtml='<div class="scards">'+p.holeCards.map(c=>mkCard(c,true).outerHTML).join('')+'</div>';
+      } else {
+        cardsHtml='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
+      }
     }
 
     let stHtml='';
@@ -1234,15 +1262,14 @@ function renderSeats(state){
     else if(p.allIn)stHtml='<div class="sstatus ai">ALL IN</div>';
 
     const betHtml=p.bet>0?`<div class="sbet-bubble">$${p.bet.toLocaleString()}</div>`:'';
-    const dealerHtml=isD?'<span class="dealer-chip">D</span>':'';
+    // Turn arrow only — no dealer chip
     const turnHtml=isAct?'<div class="turn-arrow"></div>':'';
 
     html+=`<div class="seat" style="left:${pos.x}px;top:${pos.y}px">
       ${turnHtml}
       <div class="${avc}">${p.nick.charAt(0).toUpperCase()}</div>
-      <div class="seat-info" style="display:flex;align-items:center;gap:4px;justify-content:center">
+      <div class="seat-info" style="display:flex;align-items:center;gap:3px;justify-content:center">
         <div><div class="sname">${isMe?'✦ ':''} ${p.nick}</div><div class="schips">$${p.chips.toLocaleString()}</div></div>
-        ${dealerHtml}
       </div>
       ${betHtml}${cardsHtml}${stHtml}
     </div>`;
