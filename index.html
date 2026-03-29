@@ -13,14 +13,6 @@
   --cream: #f5f0e8; --dark: #0a0a0a; --card-bg: #fdfaf4;
   --red: #c0392b; --blk: #1a1a1a;
 }
-/* Themes */
-body.theme-blue { --felt:#1a3a5c; --felt-light:#1e4a78; --felt-dark:#0f2239; }
-body.theme-purple { --felt:#2d1b4e; --felt-light:#3d2466; --felt-dark:#1a0f30; }
-body.theme-red { --felt:#4a1a1a; --felt-light:#622222; --felt-dark:#2e0f0f; }
-body.theme-black { --felt:#1a1a1a; --felt-light:#252525; --felt-dark:#0f0f0f; }
-.theme-btn { width:28px; height:28px; border-radius:50%; border:2px solid rgba(255,255,255,.25); cursor:pointer; transition:all .2s; }
-.theme-btn:hover,.theme-btn.on { border-color:var(--gold); transform:scale(1.15); }
-.theme-row { display:flex; gap:8px; align-items:center; }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:radial-gradient(ellipse at center,#1a1a2e 0%,#0a0a0a 100%); color:var(--cream); font-family:'Crimson Pro',serif; min-height:100vh; overflow-x:hidden; }
 
@@ -65,6 +57,14 @@ select option { background:#1a1a1a; }
 .fb-form label { font-size:.58rem; }
 .fb-ok { background:rgba(39,174,96,.1); border:1px solid rgba(39,174,96,.3); border-radius:6px; padding:.5rem .8rem; font-family:'JetBrains Mono',monospace; font-size:.68rem; color:#2ecc71; margin-bottom:1rem; display:none; }
 
+/* Themes */
+body.theme-blue { --felt:#1a3a5c; --felt-light:#1e4a78; --felt-dark:#0f2239; }
+body.theme-purple { --felt:#2d1b4e; --felt-light:#3d2466; --felt-dark:#1a0f30; }
+body.theme-red { --felt:#4a1a1a; --felt-light:#622222; --felt-dark:#2e0f0f; }
+body.theme-black { --felt:#1a1a1a; --felt-light:#252525; --felt-dark:#111; }
+.theme-btn { width:26px; height:26px; border-radius:50%; border:2px solid rgba(255,255,255,.2); cursor:pointer; transition:all .2s; }
+.theme-btn:hover,.theme-btn.active { border-color:var(--gold); transform:scale(1.2); }
+
 /* WAITING */
 #wait-screen { align-items:center; justify-content:center; padding:1.5rem; }
 .wait-card { background:linear-gradient(135deg,#1a1a1a,#111); border:1px solid rgba(201,168,76,.3); border-radius:16px; padding:2rem; width:100%; max-width:520px; text-align:center; }
@@ -78,13 +78,13 @@ select option { background:#1a1a1a; }
 hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 0; }
 
 /* GAME TABLE */
-#game-screen { flex-direction:column; background:var(--felt-dark); align-items:stretch; }
+#game-screen { flex-direction:column; background:var(--felt-dark); }
 .tbar { display:flex; align-items:center; justify-content:space-between; padding:.55rem 1.2rem; background:rgba(0,0,0,.45); border-bottom:1px solid rgba(201,168,76,.15); }
 .tbar-code { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:rgba(201,168,76,.5); }
 .tbar-name { font-family:'Playfair Display',serif; font-size:1rem; color:var(--gold); }
 .tbar-chips { font-family:'JetBrains Mono',monospace; font-size:.78rem; }
 .tbar-chips span { color:var(--gold); font-weight:600; }
-.felt-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; align-items:center; justify-content:flex-start; }
+.felt-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 
 /* OVAL */
 .oval-wrap { position:relative; display:flex; justify-content:center; margin:1rem auto 0; width:min(700px,96vw); }
@@ -113,10 +113,10 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .phase-lbl { font-family:'JetBrains Mono',monospace; font-size:.58rem; text-transform:uppercase; letter-spacing:.15em; color:rgba(201,168,76,.42); }
 
 /* Cards */
-.card { width:44px; height:63px; background:var(--card-bg); border-radius:5px; border:1px solid rgba(0,0,0,.2); display:flex; align-items:center; justify-content:center; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,.4); flex-direction:column; gap:0; line-height:1; }
-.card.sm { width:32px; height:46px; }
-.card .cr { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.95em; }
-.card .cs { font-size:1em; line-height:1; }
+.card { width:48px; height:68px; background:#fdfaf4; border-radius:6px; border:1px solid rgba(0,0,0,.2); display:flex; align-items:center; justify-content:center; font-weight:700; box-shadow:0 3px 10px rgba(0,0,0,.5); flex-direction:column; gap:2px; line-height:1; }
+.card.sm { width:35px; height:50px; }
+.card .cr { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:1.05em; }
+.card .cs { font-size:1.1em; line-height:1; }
 .card.red .cr { color:var(--red); } .card.blk .cr { color:var(--blk); }
 .card.down { background:linear-gradient(135deg,#1a1a6e 25%,#2e2e9e 100%); border:1px solid rgba(100,100,200,.3); }
 .card.down::after { content:'🂠'; font-size:1.6rem; opacity:.3; color:white; }
@@ -170,6 +170,17 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .spinner { width:30px; height:30px; border:3px solid rgba(201,168,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; margin:1rem auto; }
 @keyframes spin { to{transform:rotate(360deg)} }
 
+.hands-btn { position:fixed; bottom:90px; right:16px; width:40px; height:40px; border-radius:50%; background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.4); color:var(--gold); font-size:1.3rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:800; transition:all .2s; }
+.hands-btn:hover { background:rgba(201,168,76,.3); }
+.hands-modal { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:1100; display:flex; align-items:center; justify-content:center; padding:1rem; }
+.hands-inner { background:linear-gradient(135deg,#1a1a1a,#0f0f0f); border:1px solid rgba(201,168,76,.35); border-radius:16px; padding:1.5rem; max-width:500px; width:100%; max-height:90vh; overflow-y:auto; }
+.hands-inner h3 { font-family:'Playfair Display',serif; color:var(--gold); font-size:1.3rem; margin-bottom:1rem; text-align:center; }
+.hand-row { display:flex; align-items:center; gap:.75rem; padding:.5rem 0; border-bottom:1px solid rgba(201,168,76,.07); }
+.hand-row:last-child { border-bottom:none; }
+.hand-rank { font-family:'JetBrains Mono',monospace; font-size:.6rem; color:rgba(201,168,76,.5); width:18px; text-align:center; }
+.hand-name { font-family:'Playfair Display',serif; font-size:.95rem; color:var(--gold); min-width:130px; }
+.hand-ex { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:rgba(245,240,232,.5); }
+.hands-close { width:100%; margin-top:1rem; padding:.6rem; background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.3); border-radius:8px; color:var(--gold); font-family:'JetBrains Mono',monospace; font-size:.72rem; cursor:pointer; }
 @media(max-width:600px){
   .oval{height:min(250px,50vw);}
   .card{width:32px;height:46px;font-size:.75rem;}
@@ -254,12 +265,12 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
     <div class="tbar-code" id="g-code"></div>
     <div class="tbar-name" id="g-name"></div>
     <div style="display:flex;align-items:center;gap:10px">
-    <div class="theme-row">
-      <button class="theme-btn on" style="background:#1a4a2e" onclick="setTheme('')" title="Verde"></button>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="theme-btn active" style="background:#1a4a2e" onclick="setTheme('')" title="Verde"></button>
       <button class="theme-btn" style="background:#1a3a5c" onclick="setTheme('blue')" title="Azul"></button>
       <button class="theme-btn" style="background:#2d1b4e" onclick="setTheme('purple')" title="Roxo"></button>
       <button class="theme-btn" style="background:#4a1a1a" onclick="setTheme('red')" title="Vermelho"></button>
-      <button class="theme-btn" style="background:#1a1a1a" onclick="setTheme('black')" title="Preto"></button>
+      <button class="theme-btn" style="background:#111" onclick="setTheme('black')" title="Preto"></button>
     </div>
     <div class="tbar-chips">Fichas: <span id="g-chips">0</span></div>
   </div>
@@ -296,6 +307,26 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
       <div class="rlbl" id="rlbl">0</div>
       <button class="rconfirm" onclick="confirmRaise()">✓ Raise</button>
     </div>
+  </div>
+</div>
+
+<button class="hands-btn" id="hands-btn" style="display:none" onclick="toggleHands()" title="Mãos do Poker">?</button>
+
+<!-- HANDS REFERENCE -->
+<div id="hands-modal" class="hands-modal" style="display:none" onclick="if(event.target===this)toggleHands()">
+  <div class="hands-inner">
+    <h3>♠ Mãos do Poker</h3>
+    <div class="hand-row"><span class="hand-rank">1</span><span class="hand-name">High Card</span><span class="hand-ex">A K Q J 9 — carta mais alta</span></div>
+    <div class="hand-row"><span class="hand-rank">2</span><span class="hand-name">Um Par</span><span class="hand-ex">A A K Q J — dois iguais</span></div>
+    <div class="hand-row"><span class="hand-rank">3</span><span class="hand-name">Dois Pares</span><span class="hand-ex">A A K K Q — dois pares</span></div>
+    <div class="hand-row"><span class="hand-rank">4</span><span class="hand-name">Trinca</span><span class="hand-ex">A A A K Q — três iguais</span></div>
+    <div class="hand-row"><span class="hand-rank">5</span><span class="hand-name">Sequência</span><span class="hand-ex">5 6 7 8 9 — sequência</span></div>
+    <div class="hand-row"><span class="hand-rank">6</span><span class="hand-name">Flush</span><span class="hand-ex">A K T 7 2 ♠ — mesmo naipe</span></div>
+    <div class="hand-row"><span class="hand-rank">7</span><span class="hand-name">Full House</span><span class="hand-ex">A A A K K — trinca + par</span></div>
+    <div class="hand-row"><span class="hand-rank">8</span><span class="hand-name">Quadra</span><span class="hand-ex">A A A A K — quatro iguais</span></div>
+    <div class="hand-row"><span class="hand-rank">9</span><span class="hand-name">Straight Flush</span><span class="hand-ex">5 6 7 8 9 ♥ — seq + naipe</span></div>
+    <div class="hand-row"><span class="hand-rank">10</span><span class="hand-name">Royal Flush</span><span class="hand-ex">A K Q J T ♠ — a melhor mão!</span></div>
+    <button class="hands-close" onclick="toggleHands()">Fechar</button>
   </div>
 </div>
 
@@ -429,7 +460,7 @@ window.copyCode = () => {
 // ─── Poker engine ──────────────────────────────────────────────────────────
 const RANKS = ['2','3','4','5','6','7','8','9','T','J','Q','K','A'];
 const SUITS = ['♠','♥','♦','♣'];
-const SC = {'♠':'blk','♣':'club','♥':'red','♦':'diam'};
+const SC = {'♠':'blk','♣':'blk','♥':'red','♦':'red'};
 const HNAMES = ['High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
 const HDESCS = ['Nenhuma combinação','Um par de cartas iguais','Dois pares','Três cartas iguais','Sequência','Cinco cartas do mesmo naipe','Trio + Par','Quatro cartas iguais','Sequência do mesmo naipe','Sequência real do mesmo naipe'];
 
@@ -579,6 +610,7 @@ function onStateChange(state){
     return;
   }
   show('game-screen');
+  const hb=document.getElementById('hands-btn');if(hb)hb.style.display='flex';
   renderTable(state);
   if(me&&me.chips<=0&&!me.folded&&state.phase!=='waiting'&&state.phase!=='waiting_next'){
     document.getElementById('rebuy-ov').style.display='flex';
@@ -734,20 +766,11 @@ function showWinner(name,amt,hand,nextAt){
 function mkCard(card,sm){
   const d=document.createElement('div');
   if(!card){d.className='card ph'+(sm?' sm':'');return d;}
-  const cls=SC[card.s]||'blk';
-  d.className='card '+cls+(sm?' sm':'');
-  const r=card.r==='T'?'10':card.r;
-  d.innerHTML=
-    '<div class="ctop"><span class="cr">'+r+'</span><span class="cs">'+card.s+'</span></div>'+
-    '<div class="cmid">'+card.s+'</div>'+
-    '<div class="cbot"><span class="cr">'+r+'</span><span class="cs">'+card.s+'</span></div>';
+  d.className='card '+(SC[card.s]||'blk')+(sm?' sm':'');
+  d.innerHTML='<span class="cr">'+card.r+'</span><span class="cs">'+card.s+'</span>';
   return d;
 }
-function mkDown(sm){
-  const d=document.createElement('div');
-  d.className='card down'+(sm?' sm':'');
-  return d;
-}
+function mkDown(sm){const d=document.createElement('div');d.className='card down'+(sm?' sm':'');return d;}
 
 function renderComm(comm){
   const c=document.getElementById('comm-cards');c.innerHTML='';
@@ -763,6 +786,7 @@ function renderSeats(state){
   const positions=seatPos(n,W,H);
   let html='';
   state.players.forEach((p,i)=>{
+    // rel=0 → bottom (me), others distributed around
     const rel=(i-myIdx+n)%n;
     const pos=positions[rel];
     const isMe=p.id===myId;
@@ -790,12 +814,8 @@ function renderSeats(state){
 }
 
 function seatPos(n,W,H){
-  // i=0 is always "me" at bottom center, others go clockwise
-  const rx=W/2+10,ry=H/2+10,pos=[];
-  for(let i=0;i<n;i++){
-    const a=(i/n)*2*Math.PI+Math.PI/2;
-    pos.push({x:rx*Math.cos(a),y:ry*Math.sin(a)});
-  }
+  const rx=W/2+26,ry=H/2+36,pos=[];
+  for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;pos.push({x:rx*Math.cos(a),y:ry*Math.sin(a)});}
   return pos;
 }
 
