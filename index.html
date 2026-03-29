@@ -1239,8 +1239,8 @@ function applySkin(id){
   document.querySelectorAll('.skin-card').forEach((el,i)=>el.classList.toggle('active',SKINS[i].id===id));
   try{localStorage.setItem('pn_skin',id);}catch(e){}
 }
-// Load saved skin
-try{const s=localStorage.getItem('pn_skin');if(s!=null)applySkin(s);}catch(e){}
+// Load saved skin — default to classic ('') if nothing saved
+try{const s=localStorage.getItem('pn_skin');applySkin(s!==null&&s!==undefined?s:'');}catch(e){applySkin('');}
 
 // ── Render ───────────────────────────────────────────────────────────────────
 function renderTable(state){
