@@ -327,29 +327,49 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .hr-name { font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--gold); font-weight:700; }
 .hr-desc { font-size:.72rem; color:rgba(245,240,232,.5); font-style:italic; }
 
-/* ── LOG — remove from felt, show in tbar only ── */
-.glog { display:none; } /* hidden completely — info shown in tbar-center subtitle */
-.tbar-subtitle { font-family:'JetBrains Mono',monospace; font-size:.55rem; color:rgba(201,168,76,.38); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
+/* ── LOG — hidden completely ── */
+.glog { display:none; }
+.tbar-subtitle { display:none; }
 
-/* ── INLINE WINNER BANNER — toast at bottom-left, doesn't cover table ── */
+/* ── WINNER BANNER — no longer bottom toast, now under tbar ── */
 .winner-banner {
-  position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
-  display:none; flex-direction:row; align-items:center; gap:.7rem;
-  background:rgba(0,0,0,.78); border:1px solid rgba(201,168,76,.5);
-  border-radius:40px; padding:.45rem 1.2rem .45rem .9rem;
-  backdrop-filter:blur(8px);
-  z-index:30; text-align:left;
-  animation:slideUp .35s ease;
-  pointer-events:none;
-  white-space:nowrap;
+  display:none; flex-direction:row; align-items:center; justify-content:center; gap:.6rem;
+  background:linear-gradient(135deg,rgba(10,10,10,.92),rgba(20,15,0,.92));
+  border-bottom:1px solid rgba(201,168,76,.4);
+  padding:.38rem 1.2rem;
+  z-index:30; text-align:center;
+  animation:wbFadeIn .35s ease;
+  width:100%;
 }
-@keyframes slideUp { from{opacity:0;transform:translateX(-50%) translateY(12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+@keyframes wbFadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
 .winner-banner.show { display:flex; }
-.wb-trophy { font-size:1.1rem; line-height:1; flex-shrink:0; }
-.wb-name { font-family:'Playfair Display',serif; font-size:.95rem; color:var(--gold); font-weight:700; }
-.wb-amt { font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--gold-light); }
+.wb-trophy { font-size:1rem; line-height:1; flex-shrink:0; }
+.wb-name { font-family:'Playfair Display',serif; font-size:.92rem; color:var(--gold); font-weight:700; }
+.wb-amt { font-family:'JetBrains Mono',monospace; font-size:.75rem; color:var(--gold-light); }
 .wb-sep { color:rgba(201,168,76,.35); font-size:.7rem; }
-.wb-hand { font-size:.68rem; color:rgba(245,240,232,.5); font-style:italic; }
+.wb-hand { font-size:.65rem; color:rgba(245,240,232,.5); font-style:italic; }
+
+/* ── REVEAL CARDS BUTTON ── */
+.reveal-btn {
+  display:none;
+  padding:.38rem .9rem;
+  background:rgba(201,168,76,.12);
+  border:1px solid rgba(201,168,76,.45);
+  border-radius:20px;
+  color:var(--gold);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;
+  font-weight:700;
+  cursor:pointer;
+  letter-spacing:.06em;
+  transition:all .18s;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.reveal-btn:hover { background:rgba(201,168,76,.25); transform:scale(1.04); }
+.reveal-btn.shown { background:rgba(201,168,76,.22); border-color:var(--gold); }
+/* Revealed cards glow in seat */
+.seat-revealed .scards .card { box-shadow:0 0 10px rgba(201,168,76,.5),0 0 20px rgba(201,168,76,.2); }
 
 /* ── CARD SKINS ── */
 /* Skin: default (classic cream) */
@@ -549,6 +569,16 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
     </div>
   </div>
 
+  <!-- Winner banner (sits under top bar, above the felt) -->
+  <div class="winner-banner" id="winner-banner">
+    <div class="wb-trophy">🏆</div>
+    <div class="wb-name" id="wb-name"></div>
+    <div class="wb-sep">·</div>
+    <div class="wb-amt" id="wb-amt"></div>
+    <div class="wb-sep">·</div>
+    <div class="wb-hand" id="wb-hand"></div>
+  </div>
+
   <!-- Felt area -->
   <div class="felt-wrap">
 
@@ -568,16 +598,6 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
       </div>
     </div>
 
-    <!-- Inline winner banner (toast at bottom of felt) -->
-    <div class="winner-banner" id="winner-banner">
-      <div class="wb-trophy">🏆</div>
-      <div class="wb-name" id="wb-name"></div>
-      <div class="wb-sep">·</div>
-      <div class="wb-amt" id="wb-amt"></div>
-      <div class="wb-sep">·</div>
-      <div class="wb-hand" id="wb-hand"></div>
-    </div>
-
     <!-- My hand panel -->
     <div class="hand-panel">
       <div class="hole-cards" id="hole-cards"></div>
@@ -586,6 +606,7 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
         <div class="hr-name" id="hr-name">—</div>
         <div class="hr-desc" id="hr-desc"></div>
       </div>
+      <button class="reveal-btn" id="reveal-btn" onclick="toggleRevealCards()">👁 Revelar</button>
     </div>
 
   </div><!-- /felt-wrap -->
@@ -736,6 +757,7 @@ let cdTimer=null, winnerShown=false;
 let soundEnabled=true, audioCtx=null;
 let prevActiveIdx=-1;
 let bgMuted=false, bgStarted=false, bgInterval=null;
+let myCardsRevealed=false; // whether I've chosen to show my cards to others
 
 // ── Audio ctx ──────────────────────────────────────────────────────────────
 function getACtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
@@ -769,7 +791,12 @@ window.toggleSound=()=>{
 
 // ── Theme ───────────────────────────────────────────────────────────────────
 window.setTheme=(t)=>{
-  document.body.className=t?'theme-'+t:'';
+  // Preserve current skin class when switching theme
+  const skinClass = currentSkin ? 'skin-'+currentSkin : '';
+  const newClasses = [];
+  if(t) newClasses.push('theme-'+t);
+  if(skinClass) newClasses.push(skinClass);
+  document.body.className = newClasses.join(' ');
   document.querySelectorAll('.theme-dd-btn').forEach(b=>b.classList.remove('active'));
   const idx=['','blue','purple','red','black','maroon'].indexOf(t);
   if(idx>=0)document.querySelectorAll('.theme-dd-btn')[idx].classList.add('active');
@@ -1091,7 +1118,7 @@ function dealNewHand(state){
   state.deck=shuffle(newDeck());
   state.community=[];state.pot=0;state.currentBet=0;state.actedThisRound=[];
   state.handNum=(state.handNum||0)+1;
-  for(const p of state.players){p.holeCards=[];p.folded=(p.chips<=0);p.bet=0;p.allIn=false;}
+  for(const p of state.players){p.holeCards=[];p.folded=(p.chips<=0);p.bet=0;p.allIn=false;p.revealed=false;}
   const inHand=state.players.filter(p=>p.chips>0&&!p.sittingOut);
   if(inHand.length<2){state.phase='waiting';return;}
   const n=state.players.length;
@@ -1180,12 +1207,8 @@ window.doRebuy=async()=>{
 // ── Card Skin System (client-side, each player chooses their own) ─────────────
 const SKINS = [
   { id:'',        name:'Clássico',      desc:'Padrão branco',        colors:['#fdfaf4','#c0392b','#1a1a1a'] },
-  { id:'hk',      name:'Hollow Knight', desc:'Azul névoa',           colors:['#1a1a2e','#e87070','#a8d8d8'] },
-  { id:'bal',     name:'Balatro',       desc:'Roxo místico',         colors:['#2a1a3e','#ff6eb0','#d4aaff'] },
-  { id:'bat',     name:'Batman',        desc:'Preto & dourado',      colors:['#1a1a1a','#ff6b35','#ffd700'] },
   { id:'neon',    name:'Neon',          desc:'Cyber brilhante',      colors:['#0a0a1a','#ff4488','#00ffc8'] },
   { id:'gold',    name:'Luxo Dourado',  desc:'Premium elegante',     colors:['#1a1400','#ff8c42','#e8c96a'] },
-  { id:'mc',      name:'Minecraft',     desc:'Pixel art terra',      colors:['#8B7355','#ff5555','#ffffff'] },
 ];
 let currentSkin = '';
 
@@ -1208,13 +1231,13 @@ window.openSkinModal=()=>{
 window.closeSkinModal=()=>document.getElementById('skin-modal').classList.remove('open');
 
 function applySkin(id){
-  // Remove old skin classes
+  // Remove old skin classes, keep theme classes intact
   SKINS.forEach(sk=>{if(sk.id)document.body.classList.remove('skin-'+sk.id);});
   if(id) document.body.classList.add('skin-'+id);
   currentSkin=id;
   // Refresh active state in grid
   document.querySelectorAll('.skin-card').forEach((el,i)=>el.classList.toggle('active',SKINS[i].id===id));
-  localStorage.setItem('pn_skin',id);
+  try{localStorage.setItem('pn_skin',id);}catch(e){}
 }
 // Load saved skin
 try{const s=localStorage.getItem('pn_skin');if(s!=null)applySkin(s);}catch(e){}
@@ -1249,7 +1272,7 @@ function renderTable(state){
   document.getElementById('btn-start').style.display=
     (isHost&&(state.phase==='waiting'||isEnd))?'flex':'none';
 
-  // Inline winner banner (toast, doesn't cover table)
+  // Inline winner banner (now above felt, under tbar)
   const banner=document.getElementById('winner-banner');
   if(state.winnerName&&isEnd){
     if(!winnerShown){
@@ -1263,6 +1286,19 @@ function renderTable(state){
   } else if(!isEnd){
     winnerShown=false;
     banner.classList.remove('show');
+    // Reset reveal when a new hand starts
+    if(myCardsRevealed){
+      myCardsRevealed=false;
+      const btn=document.getElementById('reveal-btn');
+      if(btn){btn.textContent='👁 Revelar';btn.classList.remove('shown');}
+    }
+  }
+
+  // Show reveal button: when folded or at end of hand (and has cards)
+  const revealBtn=document.getElementById('reveal-btn');
+  if(revealBtn){
+    const canReveal = me.holeCards?.length===2 && (me.folded || isEnd);
+    revealBtn.style.display = canReveal ? 'block' : 'none';
   }
 }
 
@@ -1328,8 +1364,12 @@ function renderSeats(state){
     if(isMe&&p.holeCards?.length===2){
       cardsHtml='<div class="scards">'+p.holeCards.map(c=>mkCard(c,true).outerHTML).join('')+'</div>';
     } else if(!isMe&&p.holeCards?.length===2&&state.phase!=='waiting'){
-      // Always face-down — no reveal mechanic for opponents
-      cardsHtml='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
+      if(p.revealed){
+        // Player chose to reveal their cards — show them with a glow
+        cardsHtml='<div class="scards seat-revealed">'+p.holeCards.map(c=>mkCard(c,true).outerHTML).join('')+'</div>';
+      } else {
+        cardsHtml='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
+      }
     }
 
     let stHtml='';
@@ -1396,6 +1436,23 @@ window.onRaise=(v)=>{raiseVal=parseInt(v);document.getElementById('rlbl').textCo
 window.confirmRaise=()=>{doAction('raise',raiseVal);raiseOpen=false;document.getElementById('raise-row').style.display='none';};
 
 tryAutoInit();
+
+// ── Reveal Cards ────────────────────────────────────────────────────────────
+window.toggleRevealCards=async()=>{
+  if(!code||!myId)return;
+  myCardsRevealed=!myCardsRevealed;
+  const btn=document.getElementById('reveal-btn');
+  if(btn){
+    btn.textContent=myCardsRevealed?'🙈 Esconder':'👁 Revelar';
+    btn.classList.toggle('shown',myCardsRevealed);
+  }
+  // Write revealed flag to Firebase so others can see
+  try{
+    const state=await dbGet('tables/'+code);if(!state)return;
+    const me=state.players.find(p=>p.id===myId);
+    if(me){me.revealed=myCardsRevealed;await dbSet('tables/'+code,state);}
+  }catch(e){}
+};
 </script>
 </body>
 </html>
