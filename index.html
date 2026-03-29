@@ -87,10 +87,10 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .felt-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 
 /* OVAL */
-.oval-wrap { position:relative; display:flex; justify-content:center; margin:1rem auto 0; width:min(700px,96vw); }
-.oval { position:relative; width:100%; height:min(320px,45vw); background:radial-gradient(ellipse at center,var(--felt-light) 0%,var(--felt) 58%,var(--felt-dark) 100%); border-radius:50%; border:8px solid #2d1a00; box-shadow:0 0 0 3px var(--gold-dark),0 10px 40px rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; flex-direction:column; }
+.oval-wrap { position:relative; display:flex; justify-content:center; margin:2rem auto 0; width:min(800px,94vw); }
+.oval { position:relative; width:100%; height:min(370px,48vw); background:radial-gradient(ellipse at center,var(--felt-light) 0%,var(--felt) 58%,var(--felt-dark) 100%); border-radius:50%; border:8px solid #2d1a00; box-shadow:0 0 0 3px var(--gold-dark),0 10px 40px rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; flex-direction:column; }
 .oval::before { content:''; position:absolute; inset:12px; border-radius:50%; border:1px solid rgba(201,168,76,.1); }
-.seats-wrap { position:absolute; inset:-65px; pointer-events:none; }
+.seats-wrap { position:absolute; inset:-72px; pointer-events:none; }
 .seat { position:absolute; display:flex; flex-direction:column; align-items:center; gap:.18rem; pointer-events:all; transform:translate(-50%,-50%); }
 .av { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#2c3e50,#1a252f); border:2px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:var(--cream); font-family:'Playfair Display',serif; transition:all .3s; position:relative; }
 .av.myturn { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,.3),0 0 20px rgba(201,168,76,.4); animation:pg 1.5s ease-in-out infinite; }
@@ -117,7 +117,10 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .card.sm { width:35px; height:50px; }
 .card .cr { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:1.05em; }
 .card .cs { font-size:1.1em; line-height:1; }
-.card.red .cr { color:var(--red); } .card.blk .cr { color:var(--blk); }
+.card.red .cr,.card.red .cs { color:#d32f2f; }
+.card.blk .cr,.card.blk .cs { color:#1a1a1a; }
+.card.diam .cr,.card.diam .cs { color:#1565c0; }
+.card.club .cr,.card.club .cs { color:#2e7d32; }
 .card.down { background:linear-gradient(135deg,#1a1a6e 25%,#2e2e9e 100%); border:1px solid rgba(100,100,200,.3); }
 .card.down::after { content:'🂠'; font-size:1.6rem; opacity:.3; color:white; }
 .card.ph { background:rgba(255,255,255,.04); border:1px dashed rgba(201,168,76,.15); box-shadow:none; }
@@ -362,6 +365,21 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 
 <script>
 window.__FB__ = /* FIREBASE_CONFIG_PLACEHOLDER */null;
+
+// Funções globais (fora do module para acessar via onclick)
+window.setTheme = function(t) {
+  document.body.className = t ? 'theme-'+t : '';
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.classList.remove('active');});
+  var themes = ['','blue','purple','red','black'];
+  var idx = themes.indexOf(t);
+  var btns = document.querySelectorAll('.theme-btn');
+  if(btns[idx]) btns[idx].classList.add('active');
+};
+
+window.toggleHands = function() {
+  var m = document.getElementById('hands-modal');
+  m.style.display = m.style.display==='none' ? 'flex' : 'none';
+};
 </script>
 <script type="module">
 // ─── Firebase SDK (ESM from CDN) ───────────────────────────────────────────
@@ -460,7 +478,7 @@ window.copyCode = () => {
 // ─── Poker engine ──────────────────────────────────────────────────────────
 const RANKS = ['2','3','4','5','6','7','8','9','T','J','Q','K','A'];
 const SUITS = ['♠','♥','♦','♣'];
-const SC = {'♠':'blk','♣':'blk','♥':'red','♦':'red'};
+const SC = {'♠':'blk','♣':'club','♥':'red','♦':'diam'};
 const HNAMES = ['High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
 const HDESCS = ['Nenhuma combinação','Um par de cartas iguais','Dois pares','Três cartas iguais','Sequência','Cinco cartas do mesmo naipe','Trio + Par','Quatro cartas iguais','Sequência do mesmo naipe','Sequência real do mesmo naipe'];
 
@@ -612,7 +630,7 @@ function onStateChange(state){
   show('game-screen');
   const hb=document.getElementById('hands-btn');if(hb)hb.style.display='flex';
   renderTable(state);
-  if(me&&me.chips<=0&&!me.folded&&state.phase!=='waiting'&&state.phase!=='waiting_next'){
+  if(me&&me.chips<=0&&!me.allIn&&state.phase==='waiting_next'){
     document.getElementById('rebuy-ov').style.display='flex';
   }
 }
@@ -676,7 +694,7 @@ function advanceGame(state){
   const nf=state.players.filter(p=>!p.folded);
   if(nf.length===1){
     const w=nf[0];w.chips+=state.pot;
-    state.winnerName=w.nick;state.winnerAmt=state.pot;state.winnerHand='(todos foldaram)';
+    state.winnerName=w.nick;state.winnerAmt=state.pot;state.winnerHand='Ganhou (todos desistiram)';
     state.log.push(w.nick+' ganhou '+state.pot+'!');
     state.phase='waiting_next';state.nextHandAt=Date.now()+6500;return;
   }
@@ -746,7 +764,7 @@ function renderTable(state){
 
 function showWinner(name,amt,hand,nextAt){
   document.getElementById('win-name').textContent='🏆 '+name;
-  document.getElementById('win-amt').textContent='+'+amt+' fichas';
+  document.getElementById('win-amt').textContent='+'+amt.toLocaleString()+' fichas';
   document.getElementById('win-hand').textContent=hand;
   document.getElementById('win-ov').style.display='flex';
   if(cdTimer)clearInterval(cdTimer);
@@ -767,7 +785,8 @@ function mkCard(card,sm){
   const d=document.createElement('div');
   if(!card){d.className='card ph'+(sm?' sm':'');return d;}
   d.className='card '+(SC[card.s]||'blk')+(sm?' sm':'');
-  d.innerHTML='<span class="cr">'+card.r+'</span><span class="cs">'+card.s+'</span>';
+  const r=card.r==='T'?'10':card.r;
+  d.innerHTML='<span class="cr">'+r+'</span><span class="cs">'+card.s+'</span>';
   return d;
 }
 function mkDown(sm){const d=document.createElement('div');d.className='card down'+(sm?' sm':'');return d;}
@@ -797,8 +816,13 @@ function renderSeats(state){
     let cards='';
     if(isMe&&p.holeCards?.length===2){
       cards='<div class="scards">'+p.holeCards.map(c=>{const el=mkCard(c,true);return el.outerHTML;}).join('')+'</div>';
-    } else if(!isMe&&p.holeCards?.length>=2&&state.phase!=='waiting'){
-      cards='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
+    } else if(!isMe&&p.holeCards?.length===2&&state.phase!=='waiting'){
+      if(state.phase==='waiting_next'&&!p.folded){
+        // Revelar cartas no showdown
+        cards='<div class="scards">'+p.holeCards.map(c=>{const el=mkCard(c,true);return el.outerHTML;}).join('')+'</div>';
+      } else {
+        cards='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
+      }
     }
     let st='';
     if(p.folded)st='<div class="sstatus fold">FOLD</div>';
