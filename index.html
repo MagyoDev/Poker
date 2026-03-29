@@ -106,19 +106,21 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
   align-items:center; justify-content:center;
   background:var(--felt-dark);
   overflow:hidden;
+  padding-bottom:110px; /* space for hand-panel */
 }
 
-/* ── TABLE (rect with rounded ends like reference image) ── */
+/* ── TABLE (rect with rounded ends) ── */
 .table-outer {
   position:relative;
-  width:min(860px,96vw);
-  /* push table slightly upward from center so hand-panel has space */
-  margin-bottom:80px;
+  width:min(820px,94vw);
+  /* leave room for seats above/below without overlapping hand-panel */
+  margin-top:60px;
+  margin-bottom:60px;
 }
 .table-rail {
   position:relative;
   width:100%;
-  padding-bottom:44%; /* aspect ratio */
+  padding-bottom:42%; /* aspect ratio */
   border-radius:999px;
   background:linear-gradient(180deg, var(--rail2) 0%, var(--rail) 100%);
   box-shadow:0 8px 32px rgba(0,0,0,.9), 0 0 0 2px rgba(201,168,76,.3);
@@ -138,8 +140,8 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
   border:1px solid rgba(255,255,255,.06);
   pointer-events:none;
 }
-/* Seats positioned around the rail */
-.seats-wrap { position:absolute; inset:-68px; pointer-events:none; }
+/* Seats positioned around the rail — covers rail boundary */
+.seats-wrap { position:absolute; inset:0; pointer-events:none; overflow:visible; }
 
 /* ── SEAT ── */
 .seat {
@@ -486,7 +488,8 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 
 <!-- FAB group -->
 <div class="fab-group" id="fab-group">
-  <button class="fab" id="sound-btn" onclick="toggleSound()" title="Sons">🔊</button>
+  <button class="fab" id="sfx-btn" onclick="toggleSound()" title="Mute SFX">🔔</button>
+  <button class="fab" id="bgm-btn" onclick="toggleBgm()" title="Mute Música">🎵</button>
   <button class="fab" onclick="toggleHands()" title="Mãos do Poker">?</button>
 </div>
 
@@ -556,11 +559,12 @@ let raiseVal=0, raiseOpen=false;
 let cdTimer=null, winnerShown=false;
 let soundEnabled=true, audioCtx=null;
 let prevActiveIdx=-1;
-// Background music
-let bgMusic=null, bgMusicEnabled=false;
+let bgMuted=false, bgStarted=false, bgInterval=null;
 
-// ── Audio: SFX ──────────────────────────────────────────────────────────────
+// ── Audio ctx ──────────────────────────────────────────────────────────────
 function getACtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+
+// ── SFX ────────────────────────────────────────────────────────────────────
 function tone(freq,dur,vol=0.16,type='sine'){
   if(!soundEnabled)return;
   try{const c=getACtx(),o=c.createOscillator(),g=c.createGain();
@@ -571,64 +575,117 @@ function tone(freq,dur,vol=0.16,type='sine'){
   o.start();o.stop(c.currentTime+dur);}catch(e){}
 }
 function sndChip(){tone(850,0.06,0.18,'square');setTimeout(()=>tone(1050,0.05,0.1,'square'),35);}
-function sndCard(){tone(380,0.07,0.1,'sawtooth');setTimeout(()=>tone(280,0.05,0.07,'sawtooth'),45);}
 function sndFold(){tone(220,0.14,0.09,'sawtooth');}
 function sndAllin(){[280,380,580].forEach((f,i)=>setTimeout(()=>tone(f,0.18,0.2,'square'),i*55));}
 function sndCheck(){tone(680,0.05,0.09);}
 function sndTurn(){tone(860,0.1,0.18);setTimeout(()=>tone(1080,0.16,0.18),110);}
 function sndWin(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.22,0.18),i*95));}
 
-// ── Background music (ambient poker loops using Web Audio) ──────────────────
-function startBgMusic(){
-  if(bgMusic||!soundEnabled)return;
+// ── Background music: Risk of Rain 2 style (Thermodynamic Law / Coalescence) ──
+// Synthesised entirely in Web Audio — melodic arpeggios over a pad, very soft
+const ROR2 = {
+  // Two-bar melody pattern (semitone intervals from C4=261.63)
+  // Evoking the dreamy, melancholic arpeggios of RoR2 OST
+  mel: [0,4,7,12, 7,4,0,4, 2,5,9,12, 9,5,2,5,  // bar 1-2
+        4,7,11,14, 11,7,4,7, 0,4,7,9, 7,4,0,2], // bar 3-4
+  // Chord pad notes (intervals from C3)
+  pad: [[0,7,12,16],[5,9,14,17],[3,7,10,14],[2,5,9,12]],
+  BASE: 261.63,  // C4
+  BPM: 76,
+};
+let rorStep=0, rorPadStep=0;
+
+function semitone(base,n){return base*Math.pow(2,n/12);}
+
+function rorNote(ctx,freq,startT,dur,vol,type='sine'){
   try{
-    const c=getACtx();
-    // Subtle, ambient low drone + rhythmic hi-hat pattern
-    const master=c.createGain();master.gain.value=0.06;master.connect(c.destination);
-    // Bass drone
-    const drone=c.createOscillator();drone.type='sine';drone.frequency.value=55;
-    const droneG=c.createGain();droneG.gain.value=0.5;
-    drone.connect(droneG);droneG.connect(master);drone.start();
-    // Subtle shimmer
-    const shimmer=c.createOscillator();shimmer.type='sine';shimmer.frequency.value=220;
-    const shimG=c.createGain();shimG.gain.value=0.2;
-    shimmer.connect(shimG);shimG.connect(master);shimmer.start();
-    // Slow LFO on shimmer
-    const lfo=c.createOscillator();lfo.frequency.value=0.15;
-    const lfoG=c.createGain();lfoG.gain.value=80;
-    lfo.connect(lfoG);lfoG.connect(shimmer.frequency);lfo.start();
-    // Rhythmic click (hi-hat feel) every 0.5s
-    let beat=0;
-    const beatNode={drone,shimmer,lfo,master,interval:null};
-    beatNode.interval=setInterval(()=>{
-      if(!soundEnabled){return;}
-      try{
-        const buf=c.createBuffer(1,c.sampleRate*0.03,c.sampleRate);
-        const d=buf.getChannelData(0);
-        for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
-        const src=c.createBufferSource();src.buffer=buf;
-        const hg=c.createGain();hg.gain.value=beat%4===0?0.06:0.025;
-        src.connect(hg);hg.connect(c.destination);
-        src.start();beat++;
-      }catch(e){}
-    },500);
-    bgMusic=beatNode;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(0,startT);
+    g.gain.linearRampToValueAtTime(vol,startT+0.06);
+    g.gain.setValueAtTime(vol,startT+dur*0.75);
+    g.gain.linearRampToValueAtTime(0,startT+dur);
+    o.connect(g);g.connect(ctx.destination);
+    o.start(startT);o.stop(startT+dur+0.05);
   }catch(e){}
-}
-function stopBgMusic(){
-  if(!bgMusic)return;
-  try{
-    clearInterval(bgMusic.interval);
-    [bgMusic.drone,bgMusic.shimmer,bgMusic.lfo].forEach(n=>{try{n.stop();}catch(e){}});
-  }catch(e){}
-  bgMusic=null;
 }
 
+function startBgMusic(){
+  if(bgStarted||bgMuted)return;
+  bgStarted=true;
+  try{
+    const ctx=getACtx();
+    if(ctx.state==='suspended')ctx.resume();
+    const beat=60/ROR2.BPM; // seconds per beat
+
+    function playMelBeat(){
+      if(bgMuted)return;
+      const semis=ROR2.mel[rorStep%ROR2.mel.length];
+      // Every 8th note, play an octave lower for depth
+      const oct=rorStep%8<4?1:0.5;
+      const freq=semitone(ROR2.BASE,semis)*oct;
+      rorNote(ctx,freq,ctx.currentTime,beat*0.9,0.022,'triangle');
+      // Add a soft 5th above every other note
+      if(rorStep%2===0) rorNote(ctx,freq*1.5,ctx.currentTime,beat*0.7,0.008,'sine');
+      rorStep++;
+    }
+
+    function playPad(){
+      if(bgMuted)return;
+      const chord=ROR2.pad[rorPadStep%ROR2.pad.length];
+      const BASE_PAD=ROR2.BASE/2; // C3
+      chord.forEach((s,i)=>{
+        const f=semitone(BASE_PAD,s);
+        rorNote(ctx,f,ctx.currentTime+i*0.025,beat*7,0.012,'sine');
+        // Slight detune for warmth
+        rorNote(ctx,f*1.002,ctx.currentTime+i*0.025,beat*7,0.008,'sine');
+      });
+      rorPadStep++;
+    }
+
+    function playSubBass(){
+      if(bgMuted)return;
+      rorNote(ctx,ROR2.BASE/4,ctx.currentTime,beat*2,0.028,'sine'); // C2 thump
+    }
+
+    // Start with pad
+    playPad();playSubBass();
+
+    let tick=0;
+    bgInterval=setInterval(()=>{
+      if(bgMuted)return;
+      tick++;
+      playMelBeat();
+      if(tick%2===0) playSubBass();
+      if(tick%8===0) playPad();
+    }, beat*1000);
+  }catch(e){bgStarted=false;}
+}
+
+function stopBgMusic(){
+  if(bgInterval){clearInterval(bgInterval);bgInterval=null;}
+  bgStarted=false;
+}
+
+// SFX toggle
 window.toggleSound=()=>{
   soundEnabled=!soundEnabled;
-  document.getElementById('sound-btn').textContent=soundEnabled?'🔊':'🔇';
+  const btn=document.getElementById('sfx-btn');
+  btn.textContent=soundEnabled?'🔔':'🔕';
+  btn.title=soundEnabled?'Mute SFX':'Ativar SFX';
   try{getACtx().resume();}catch(e){}
-  if(soundEnabled){startBgMusic();}else{stopBgMusic();}
+};
+
+// BGM toggle
+window.toggleBgm=()=>{
+  bgMuted=!bgMuted;
+  const btn=document.getElementById('bgm-btn');
+  btn.style.opacity=bgMuted?'0.35':'1';
+  btn.title=bgMuted?'Ativar Música':'Mute Música';
+  if(!bgMuted){
+    try{getACtx().resume();}catch(e){}
+    if(!bgStarted)startBgMusic();
+  }
 };
 
 // ── Theme ───────────────────────────────────────────────────────────────────
@@ -783,7 +840,7 @@ window.leaveTable=async()=>{
   if(unsubFn){unsubFn();unsubFn=null;}
   myId=null;myNick=null;code=null;isHost=false;raiseOpen=false;winnerShown=false;
   if(cdTimer)clearInterval(cdTimer);
-  stopBgMusic();
+  stopBgMusic();bgStarted=false;
   document.getElementById('rejoin-ov').style.display='none';
   document.getElementById('win-ov').style.display='none';
   showGameUI(false);
@@ -801,8 +858,8 @@ function onStateChange(state){
     return;
   }
   show('game-screen');showGameUI(true);
-  // Start bg music on first game state
-  if(soundEnabled&&!bgMusic)startBgMusic();
+  // Start bg music on first interaction with game
+  if(!bgStarted&&!bgMuted){try{getACtx().resume().then(()=>startBgMusic());}catch(e){startBgMusic();}}
   renderTable(state);
   if(state.activePlayerIdx!==prevActiveIdx){
     if(state.players[state.activePlayerIdx]?.id===myId)sndTurn();
@@ -971,13 +1028,20 @@ function renderComm(comm){
 }
 
 // ── Seat layout ──────────────────────────────────────────────────────────────
-function seatPos(n,W,H){
-  // Reference-image style: slightly rectangular ellipse, no gap at bottom (my seat is bottom-center)
-  const rx=W/2+42, ry=H/2+50, pos=[];
-  for(let i=0;i<n;i++){
-    // Start from bottom (π/2 going clockwise so i=0 is bottom)
-    const a=(i/n)*2*Math.PI + Math.PI/2;
-    pos.push({x:rx*Math.cos(a), y:ry*Math.sin(a)});
+// Positions seats around the rail border. W/H = rail dimensions.
+// Seats use ellipse with radii slightly outside the rail center.
+// rel=0 = ME = bottom-center. Others distributed clockwise.
+function seatPos(n, W, H) {
+  const cx = W / 2, cy = H / 2;
+  // Ellipse radii: just outside the rail edge (rail is border-radius:999px)
+  // For a pill shape, the "ellipse" that traces the outer edge has rx~W/2, ry~H/2
+  const rx = cx + 2;   // along horizontal axis
+  const ry = cy + 2;   // along vertical axis
+  const pos = [];
+  for (let i = 0; i < n; i++) {
+    // i=0 → bottom (π/2), going counter-clockwise so opponents appear across
+    const a = Math.PI / 2 + (i / n) * 2 * Math.PI;
+    pos.push({ x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) });
   }
   return pos;
 }
@@ -1004,7 +1068,6 @@ function renderSeats(state){
     if(isMe)avc+=' me';
     if(isD)avc+=' dealer';
 
-    // Cards for this seat
     let cardsHtml='';
     if(isMe&&p.holeCards?.length===2){
       cardsHtml='<div class="scards">'+p.holeCards.map(c=>mkCard(c,true).outerHTML).join('')+'</div>';
@@ -1012,24 +1075,21 @@ function renderSeats(state){
       cardsHtml='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
     }
 
-    // Status badge
     let stHtml='';
     if(p.sittingOut)stHtml='<div class="sstatus">ESPERA</div>';
     else if(p.folded)stHtml='<div class="sstatus fold">FOLD</div>';
     else if(p.allIn)stHtml='<div class="sstatus ai">ALL IN</div>';
 
-    // Bet bubble (positioned separately from main info)
     const betHtml=p.bet>0?`<div class="sbet-bubble">$${p.bet.toLocaleString()}</div>`:'';
 
-    html+=`<div class="seat" style="left:${pos.x+W/2}px;top:${pos.y+H/2}px">
+    // Use pos.x/pos.y directly (already W,H-space coords)
+    html+=`<div class="seat" style="left:${pos.x}px;top:${pos.y}px">
       <div class="${avc}">${p.nick.charAt(0).toUpperCase()}</div>
       <div class="seat-info">
         <div class="sname">${isMe?'✦ ':''} ${p.nick}</div>
         <div class="schips">$${p.chips.toLocaleString()}</div>
       </div>
-      ${betHtml}
-      ${cardsHtml}
-      ${stHtml}
+      ${betHtml}${cardsHtml}${stHtml}
     </div>`;
   });
   wrap.innerHTML=html;
