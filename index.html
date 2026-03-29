@@ -87,17 +87,80 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .tbar-chips { font-family:'JetBrains Mono',monospace; font-size:.78rem; white-space:nowrap; }
 .tbar-chips span { color:var(--gold); font-weight:600; }
 
-/* Theme picker — moved to bottom-left corner of game screen */
-.theme-picker {
-  position:fixed; bottom:14px; left:14px; z-index:800;
-  display:none;
-  background:rgba(0,0,0,.7); border:1px solid rgba(201,168,76,.25);
-  border-radius:40px; padding:.3rem .55rem;
-  flex-direction:row; gap:.4rem; align-items:center;
-  backdrop-filter:blur(6px);
+/* ── SIDE PANEL (right side, above action bar) ── */
+.side-panel {
+  position:fixed; right:12px; bottom:70px; /* above action bar */
+  display:none; flex-direction:column;
+  gap:6px; z-index:800;
+  align-items:flex-end;
 }
-.theme-btn { width:22px; height:22px; border-radius:50%; border:2px solid rgba(255,255,255,.15); cursor:pointer; transition:all .2s; flex-shrink:0; }
-.theme-btn:hover,.theme-btn.active { border-color:var(--gold); transform:scale(1.25); }
+.side-btn {
+  width:40px; height:40px; border-radius:50%;
+  background:rgba(10,10,10,.82); border:1px solid rgba(201,168,76,.38);
+  color:var(--gold); font-size:1rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s; backdrop-filter:blur(6px);
+  flex-shrink:0;
+}
+.side-btn:hover { background:rgba(201,168,76,.18); transform:scale(1.08); }
+.side-btn.muted { opacity:.38; }
+
+/* Theme dropdown — slides left from side-panel */
+.theme-dropdown {
+  position:fixed; right:60px; bottom:70px; z-index:801;
+  background:rgba(10,10,10,.95); border:1px solid rgba(201,168,76,.3);
+  border-radius:12px; padding:.7rem .9rem;
+  display:none; flex-direction:column; gap:.45rem;
+  backdrop-filter:blur(10px);
+  min-width:120px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.6);
+}
+.theme-dropdown.open { display:flex; }
+.theme-dropdown-row { display:flex; gap:.5rem; align-items:center; cursor:pointer; }
+.theme-dropdown-row:hover .theme-dd-lbl { color:var(--gold); }
+.theme-dd-btn {
+  width:22px; height:22px; border-radius:50%;
+  border:2px solid rgba(255,255,255,.15);
+  cursor:pointer; transition:all .18s; flex-shrink:0;
+}
+.theme-dd-btn:hover, .theme-dd-btn.active { border-color:var(--gold); transform:scale(1.2); }
+.theme-dd-lbl {
+  font-family:'JetBrains Mono',monospace; font-size:.62rem;
+  color:rgba(245,240,232,.6); user-select:none; transition:color .15s;
+}
+
+/* Music player panel — slides left from side-panel */
+.music-panel {
+  position:fixed; right:60px; bottom:70px; z-index:801;
+  background:rgba(8,8,8,.97); border:1px solid rgba(201,168,76,.3);
+  border-radius:16px; padding:1rem 1.1rem;
+  display:none; flex-direction:column; gap:.65rem;
+  backdrop-filter:blur(12px);
+  width:270px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.7);
+}
+.music-panel.open { display:flex; }
+.mp-header { text-align:center; }
+.mp-title { font-family:'Playfair Display',serif; font-size:.88rem; color:var(--gold); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mp-artist { font-family:'JetBrains Mono',monospace; font-size:.56rem; color:rgba(245,240,232,.38); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mp-prog-wrap { position:relative; height:4px; background:rgba(255,255,255,.1); border-radius:4px; cursor:pointer; margin:.1rem 0; }
+.mp-prog-fill { height:100%; background:linear-gradient(90deg,var(--gold-dark),var(--gold)); border-radius:4px; width:0%; transition:width .4s linear; pointer-events:none; }
+.mp-times { display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:.52rem; color:rgba(245,240,232,.32); }
+.mp-controls { display:flex; align-items:center; justify-content:center; gap:1rem; }
+.mp-ctrl { background:none; border:none; color:rgba(245,240,232,.55); font-size:1rem; cursor:pointer; padding:.2rem; transition:color .15s; line-height:1; }
+.mp-ctrl:hover { color:var(--gold); }
+.mp-play { background:var(--gold); color:var(--dark); border:none; border-radius:50%; width:34px; height:34px; font-size:.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; box-shadow:0 2px 8px rgba(201,168,76,.4); }
+.mp-play:hover { background:var(--gold-light); transform:scale(1.08); }
+.mp-vol-row { display:flex; align-items:center; gap:.5rem; }
+.mp-vol-lbl { font-family:'JetBrains Mono',monospace; font-size:.6rem; color:rgba(245,240,232,.35); }
+.mp-vol { flex:1; height:3px; accent-color:var(--gold); cursor:pointer; }
+.mp-divider { border:none; border-top:1px solid rgba(201,168,76,.1); margin:0; }
+.mp-input-row { display:flex; gap:.4rem; }
+.mp-url { flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(201,168,76,.2); border-radius:8px; color:var(--cream); font-family:'JetBrains Mono',monospace; font-size:.62rem; padding:.38rem .55rem; outline:none; min-width:0; }
+.mp-url::placeholder { color:rgba(245,240,232,.22); }
+.mp-url:focus { border-color:var(--gold); }
+.mp-load { padding:.38rem .6rem; background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.32); border-radius:8px; color:var(--gold); font-family:'JetBrains Mono',monospace; font-size:.6rem; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+.mp-load:hover { background:rgba(201,168,76,.28); }
 
 /* ── FELT AREA ── */
 .felt-wrap {
@@ -166,10 +229,29 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .av.folded { opacity:.3; }
 .av.allin { border-color:#e74c3c; box-shadow:0 0 0 2px rgba(231,76,60,.4); }
 .av.me { border-color:#4a9eff; }
-.av.dealer::after { content:'D'; position:absolute; top:-5px; right:-5px; width:16px; height:16px; background:var(--gold); color:var(--dark); border-radius:50%; font-size:.48rem; font-weight:700; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; }
+/* Dealer button: small chip near the seat-info, not on avatar */
 @keyframes pg { 0%,100%{box-shadow:0 0 0 3px rgba(201,168,76,.3),0 0 12px rgba(201,168,76,.3)} 50%{box-shadow:0 0 0 5px rgba(201,168,76,.55),0 0 22px rgba(201,168,76,.6)} }
 
-/* Seat info card — like reference image */
+/* Dealer chip (small white D badge near seat-info) */
+.dealer-chip {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:18px; height:18px; border-radius:50%;
+  background:#fff; color:#111;
+  font-family:'JetBrains Mono',monospace; font-size:.52rem; font-weight:800;
+  border:1.5px solid rgba(0,0,0,.25);
+  box-shadow:0 1px 4px rgba(0,0,0,.5);
+  flex-shrink:0;
+}
+/* Turn indicator arrow below seat when it's their turn */
+.turn-arrow {
+  width:0; height:0;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-bottom:8px solid var(--gold);
+  filter:drop-shadow(0 0 4px rgba(201,168,76,.8));
+  animation:bounce 0.7s ease-in-out infinite alternate;
+}
+@keyframes bounce { from{transform:translateY(-3px)} to{transform:translateY(2px)} }
 .seat-info {
   background:rgba(0,0,0,.82);
   border:1px solid rgba(255,255,255,.1);
@@ -301,11 +383,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .win-close-btn:hover { background:var(--gold-light); }
 .spinner { width:30px; height:30px; border:3px solid rgba(201,168,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; margin:1rem auto; }
 @keyframes spin { to{transform:rotate(360deg)} }
-
-/* ── FAB BUTTONS (fixed) ── */
-.fab-group { position:fixed; right:14px; bottom:14px; display:none; flex-direction:column; gap:.4rem; z-index:800; }
-.fab { width:40px; height:40px; border-radius:50%; background:rgba(0,0,0,.7); border:1px solid rgba(201,168,76,.4); color:var(--gold); font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; backdrop-filter:blur(4px); }
-.fab:hover { background:rgba(201,168,76,.2); transform:scale(1.1); }
 
 /* ── HANDS MODAL ── */
 .hands-modal { position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:1100; display:flex; align-items:center; justify-content:center; padding:1rem; }
@@ -476,21 +553,74 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 
 </div><!-- /game-screen -->
 
-<!-- Theme picker (bottom-left, shown in game) -->
-<div class="theme-picker" id="theme-picker">
-  <button class="theme-btn active" style="background:#2d6e42" onclick="setTheme('')" title="Verde"></button>
-  <button class="theme-btn" style="background:#1c4f7a" onclick="setTheme('blue')" title="Azul"></button>
-  <button class="theme-btn" style="background:#3a1f6e" onclick="setTheme('purple')" title="Roxo"></button>
-  <button class="theme-btn" style="background:#6e1f1f" onclick="setTheme('red')" title="Vermelho"></button>
-  <button class="theme-btn" style="background:#222" onclick="setTheme('black')" title="Preto"></button>
-  <button class="theme-btn" style="background:#5a1533" onclick="setTheme('maroon')" title="Vinho"></button>
+<!-- ══ SIDE PANEL (right side buttons) ══ -->
+<div class="side-panel" id="side-panel">
+  <!-- SFX mute -->
+  <button class="side-btn" id="sfx-btn" onclick="toggleSound()" title="SFX">🔔</button>
+  <!-- Music player toggle -->
+  <button class="side-btn" id="music-btn" onclick="toggleMusicPanel()" title="Música">🎵</button>
+  <!-- Theme toggle -->
+  <button class="side-btn" id="theme-btn" onclick="toggleThemeDropdown()" title="Cor da Mesa">🎨</button>
+  <!-- Hands reference -->
+  <button class="side-btn" onclick="toggleHands()" title="Mãos do Poker">?</button>
 </div>
 
-<!-- FAB group -->
-<div class="fab-group" id="fab-group">
-  <button class="fab" id="sfx-btn" onclick="toggleSound()" title="Mute SFX">🔔</button>
-  <button class="fab" id="bgm-btn" onclick="toggleBgm()" title="Mute Música">🎵</button>
-  <button class="fab" onclick="toggleHands()" title="Mãos do Poker">?</button>
+<!-- Theme dropdown (slides from right) -->
+<div class="theme-dropdown" id="theme-dropdown">
+  <div class="theme-dropdown-row">
+    <button class="theme-dd-btn active" style="background:#2d6e42" onclick="setTheme('')"></button>
+    <span class="theme-dd-lbl" onclick="setTheme('')">Verde</span>
+  </div>
+  <div class="theme-dropdown-row">
+    <button class="theme-dd-btn" style="background:#1c4f7a" onclick="setTheme('blue')"></button>
+    <span class="theme-dd-lbl" onclick="setTheme('blue')">Azul</span>
+  </div>
+  <div class="theme-dropdown-row">
+    <button class="theme-dd-btn" style="background:#3a1f6e" onclick="setTheme('purple')"></button>
+    <span class="theme-dd-lbl" onclick="setTheme('purple')">Roxo</span>
+  </div>
+  <div class="theme-dropdown-row">
+    <button class="theme-dd-btn" style="background:#6e1f1f" onclick="setTheme('red')"></button>
+    <span class="theme-dd-lbl" onclick="setTheme('red')">Vermelho</span>
+  </div>
+  <div class="theme-dropdown-row">
+    <button class="theme-dd-btn" style="background:#222" onclick="setTheme('black')"></button>
+    <span class="theme-dd-lbl" onclick="setTheme('black')">Preto</span>
+  </div>
+  <div class="theme-dropdown-row">
+    <button class="theme-dd-btn" style="background:#5a1533" onclick="setTheme('maroon')"></button>
+    <span class="theme-dd-lbl" onclick="setTheme('maroon')">Vinho</span>
+  </div>
+</div>
+
+<!-- Music Player Panel -->
+<div class="music-panel" id="music-panel">
+  <div class="mp-header">
+    <div class="mp-title" id="mp-title">Sem música</div>
+    <div class="mp-artist" id="mp-artist">Cole um link do YouTube abaixo</div>
+  </div>
+  <div class="mp-prog-wrap" id="mp-prog-wrap" onclick="mpSeek(event)">
+    <div class="mp-prog-fill" id="mp-prog"></div>
+  </div>
+  <div class="mp-times">
+    <span id="mp-cur">0:00</span>
+    <span id="mp-dur">0:00</span>
+  </div>
+  <div class="mp-controls">
+    <button class="mp-ctrl" onclick="mpPrev()" title="Reiniciar">⏮</button>
+    <button class="mp-play" id="mp-play-btn" onclick="mpTogglePlay()">▶</button>
+    <button class="mp-ctrl" onclick="mpNext()" title="Próxima">⏭</button>
+  </div>
+  <div class="mp-vol-row">
+    <span class="mp-vol-lbl">🔉</span>
+    <input class="mp-vol" type="range" id="mp-vol" min="0" max="100" value="40" oninput="mpSetVol(this.value)">
+    <span class="mp-vol-lbl">🔊</span>
+  </div>
+  <hr class="mp-divider">
+  <div class="mp-input-row">
+    <input class="mp-url" id="mp-url" type="text" placeholder="Link do YouTube...">
+    <button class="mp-load" onclick="mpLoad()">▶ Tocar</button>
+  </div>
 </div>
 
 <!-- Hands reference -->
@@ -580,122 +710,142 @@ function sndAllin(){[280,380,580].forEach((f,i)=>setTimeout(()=>tone(f,0.18,0.2,
 function sndCheck(){tone(680,0.05,0.09);}
 function sndTurn(){tone(860,0.1,0.18);setTimeout(()=>tone(1080,0.16,0.18),110);}
 function sndWin(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.22,0.18),i*95));}
-
-// ── Background music: Risk of Rain 2 style (Thermodynamic Law / Coalescence) ──
-// Synthesised entirely in Web Audio — melodic arpeggios over a pad, very soft
-const ROR2 = {
-  // Two-bar melody pattern (semitone intervals from C4=261.63)
-  // Evoking the dreamy, melancholic arpeggios of RoR2 OST
-  mel: [0,4,7,12, 7,4,0,4, 2,5,9,12, 9,5,2,5,  // bar 1-2
-        4,7,11,14, 11,7,4,7, 0,4,7,9, 7,4,0,2], // bar 3-4
-  // Chord pad notes (intervals from C3)
-  pad: [[0,7,12,16],[5,9,14,17],[3,7,10,14],[2,5,9,12]],
-  BASE: 261.63,  // C4
-  BPM: 76,
-};
-let rorStep=0, rorPadStep=0;
-
-function semitone(base,n){return base*Math.pow(2,n/12);}
-
-function rorNote(ctx,freq,startT,dur,vol,type='sine'){
-  try{
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.type=type;o.frequency.value=freq;
-    g.gain.setValueAtTime(0,startT);
-    g.gain.linearRampToValueAtTime(vol,startT+0.06);
-    g.gain.setValueAtTime(vol,startT+dur*0.75);
-    g.gain.linearRampToValueAtTime(0,startT+dur);
-    o.connect(g);g.connect(ctx.destination);
-    o.start(startT);o.stop(startT+dur+0.05);
-  }catch(e){}
-}
-
-function startBgMusic(){
-  if(bgStarted||bgMuted)return;
-  bgStarted=true;
-  try{
-    const ctx=getACtx();
-    if(ctx.state==='suspended')ctx.resume();
-    const beat=60/ROR2.BPM; // seconds per beat
-
-    function playMelBeat(){
-      if(bgMuted)return;
-      const semis=ROR2.mel[rorStep%ROR2.mel.length];
-      // Every 8th note, play an octave lower for depth
-      const oct=rorStep%8<4?1:0.5;
-      const freq=semitone(ROR2.BASE,semis)*oct;
-      rorNote(ctx,freq,ctx.currentTime,beat*0.9,0.022,'triangle');
-      // Add a soft 5th above every other note
-      if(rorStep%2===0) rorNote(ctx,freq*1.5,ctx.currentTime,beat*0.7,0.008,'sine');
-      rorStep++;
-    }
-
-    function playPad(){
-      if(bgMuted)return;
-      const chord=ROR2.pad[rorPadStep%ROR2.pad.length];
-      const BASE_PAD=ROR2.BASE/2; // C3
-      chord.forEach((s,i)=>{
-        const f=semitone(BASE_PAD,s);
-        rorNote(ctx,f,ctx.currentTime+i*0.025,beat*7,0.012,'sine');
-        // Slight detune for warmth
-        rorNote(ctx,f*1.002,ctx.currentTime+i*0.025,beat*7,0.008,'sine');
-      });
-      rorPadStep++;
-    }
-
-    function playSubBass(){
-      if(bgMuted)return;
-      rorNote(ctx,ROR2.BASE/4,ctx.currentTime,beat*2,0.028,'sine'); // C2 thump
-    }
-
-    // Start with pad
-    playPad();playSubBass();
-
-    let tick=0;
-    bgInterval=setInterval(()=>{
-      if(bgMuted)return;
-      tick++;
-      playMelBeat();
-      if(tick%2===0) playSubBass();
-      if(tick%8===0) playPad();
-    }, beat*1000);
-  }catch(e){bgStarted=false;}
-}
-
-function stopBgMusic(){
-  if(bgInterval){clearInterval(bgInterval);bgInterval=null;}
-  bgStarted=false;
-}
+function stopBgMusic(){if(bgInterval){clearInterval(bgInterval);bgInterval=null;}bgStarted=false;}
 
 // SFX toggle
 window.toggleSound=()=>{
   soundEnabled=!soundEnabled;
   const btn=document.getElementById('sfx-btn');
   btn.textContent=soundEnabled?'🔔':'🔕';
-  btn.title=soundEnabled?'Mute SFX':'Ativar SFX';
+  btn.classList.toggle('muted',!soundEnabled);
   try{getACtx().resume();}catch(e){}
-};
-
-// BGM toggle
-window.toggleBgm=()=>{
-  bgMuted=!bgMuted;
-  const btn=document.getElementById('bgm-btn');
-  btn.style.opacity=bgMuted?'0.35':'1';
-  btn.title=bgMuted?'Ativar Música':'Mute Música';
-  if(!bgMuted){
-    try{getACtx().resume();}catch(e){}
-    if(!bgStarted)startBgMusic();
-  }
 };
 
 // ── Theme ───────────────────────────────────────────────────────────────────
 window.setTheme=(t)=>{
   document.body.className=t?'theme-'+t:'';
-  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.theme-dd-btn').forEach(b=>b.classList.remove('active'));
   const idx=['','blue','purple','red','black','maroon'].indexOf(t);
-  if(idx>=0)document.querySelectorAll('.theme-btn')[idx].classList.add('active');
+  if(idx>=0)document.querySelectorAll('.theme-dd-btn')[idx].classList.add('active');
+  document.getElementById('theme-dropdown').classList.remove('open');
 };
-window.toggleHands=()=>{const m=document.getElementById('hands-modal');m.style.display=m.style.display==='none'?'flex':'none';};
+window.toggleThemeDropdown=()=>{
+  const dd=document.getElementById('theme-dropdown');
+  dd.classList.toggle('open');
+  document.getElementById('music-panel').classList.remove('open');
+};
+window.toggleHands=()=>{
+  const m=document.getElementById('hands-modal');
+  m.style.display=m.style.display==='none'?'flex':'none';
+  document.getElementById('theme-dropdown').classList.remove('open');
+  document.getElementById('music-panel').classList.remove('open');
+};
+
+// ── Music Player (YouTube audio only via iframe API) ──────────────────────
+let mpPlayer=null, mpReady=false, mpPlaying=false, mpProgTimer=null;
+let mpQueue=[], mpQueueIdx=0;
+
+window.toggleMusicPanel=()=>{
+  const p=document.getElementById('music-panel');
+  p.classList.toggle('open');
+  document.getElementById('theme-dropdown').classList.remove('open');
+};
+
+// Load YouTube IFrame API
+function loadYTApi(){
+  if(window.YT)return;
+  const s=document.createElement('script');
+  s.src='https://www.youtube.com/iframe_api';
+  document.head.appendChild(s);
+}
+window.onYouTubeIframeAPIReady=()=>{mpReady=true;};
+
+function ytExtractId(url){
+  const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+  return m?m[1]:null;
+}
+
+window.mpLoad=()=>{
+  const url=document.getElementById('mp-url').value.trim();
+  const vid=ytExtractId(url);
+  if(!vid){alert('Link do YouTube inválido!');return;}
+  document.getElementById('mp-url').value='';
+
+  // Create hidden iframe container if needed
+  let container=document.getElementById('yt-hidden');
+  if(!container){
+    container=document.createElement('div');
+    container.id='yt-hidden';
+    container.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
+    document.body.appendChild(container);
+    const iframe=document.createElement('div');
+    iframe.id='yt-player-el';
+    container.appendChild(iframe);
+  }
+  loadYTApi();
+
+  const initPlayer=()=>{
+    if(mpPlayer){mpPlayer.loadVideoById(vid);mpPlayer.setVolume(parseInt(document.getElementById('mp-vol').value)||40);return;}
+    if(!window.YT){setTimeout(initPlayer,200);return;}
+    mpPlayer=new YT.Player('yt-player-el',{
+      width:1,height:1,videoId:vid,
+      playerVars:{autoplay:1,controls:0,rel:0,modestbranding:1},
+      events:{
+        onReady:(e)=>{e.target.setVolume(parseInt(document.getElementById('mp-vol').value)||40);e.target.playVideo();mpPlaying=true;document.getElementById('mp-play-btn').textContent='⏸';mpStartProg();},
+        onStateChange:(e)=>{
+          if(e.data===YT.PlayerState.PLAYING){mpPlaying=true;document.getElementById('mp-play-btn').textContent='⏸';mpStartProg();}
+          else if(e.data===YT.PlayerState.PAUSED||e.data===YT.PlayerState.ENDED){mpPlaying=false;document.getElementById('mp-play-btn').textContent='▶';if(e.data===YT.PlayerState.ENDED)mpNext();}
+        },
+        onError:()=>{document.getElementById('mp-title').textContent='Erro ao carregar';},
+      }
+    });
+  };
+  initPlayer();
+  // Show title placeholder while loading
+  document.getElementById('mp-title').textContent='Carregando…';
+  document.getElementById('mp-artist').textContent='youtube.com/watch?v='+vid;
+  // Try to get title after player ready (YT API provides it)
+  setTimeout(()=>{
+    try{if(mpPlayer&&mpPlayer.getVideoData){const d=mpPlayer.getVideoData();if(d&&d.title)document.getElementById('mp-title').textContent=d.title;}}catch(e){}
+  },2500);
+};
+
+function mpStartProg(){
+  if(mpProgTimer)clearInterval(mpProgTimer);
+  mpProgTimer=setInterval(()=>{
+    if(!mpPlayer||!mpPlaying)return;
+    try{
+      const cur=mpPlayer.getCurrentTime()||0;
+      const dur=mpPlayer.getDuration()||0;
+      if(dur>0){
+        document.getElementById('mp-prog').style.width=((cur/dur)*100)+'%';
+        document.getElementById('mp-cur').textContent=fmtTime(cur);
+        document.getElementById('mp-dur').textContent=fmtTime(dur);
+        // Update title periodically
+        const d=mpPlayer.getVideoData();
+        if(d&&d.title&&d.title!==document.getElementById('mp-title').textContent)
+          document.getElementById('mp-title').textContent=d.title;
+      }
+    }catch(e){}
+  },500);
+}
+function fmtTime(s){const m=Math.floor(s/60);const sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+
+window.mpTogglePlay=()=>{
+  if(!mpPlayer)return;
+  try{if(mpPlaying){mpPlayer.pauseVideo();}else{mpPlayer.playVideo();}}catch(e){}
+};
+window.mpPrev=()=>{try{if(mpPlayer)mpPlayer.seekTo(0);}catch(e){}};
+window.mpNext=()=>{/* single video mode — restart */try{if(mpPlayer)mpPlayer.seekTo(0);}catch(e){}};
+window.mpSetVol=(v)=>{try{if(mpPlayer)mpPlayer.setVolume(parseInt(v));}catch(e){}};
+window.mpSeek=(e)=>{
+  try{
+    if(!mpPlayer)return;
+    const rect=document.getElementById('mp-prog-wrap').getBoundingClientRect();
+    const pct=(e.clientX-rect.left)/rect.width;
+    mpPlayer.seekTo(mpPlayer.getDuration()*Math.max(0,Math.min(1,pct)));
+  }catch(e){}
+};
 
 // ── Firebase ────────────────────────────────────────────────────────────────
 function initFB(url,apiKey,projectId){
@@ -766,8 +916,11 @@ function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.re
 function connecting(msg){document.getElementById('conn-ov').style.display='flex';document.getElementById('conn-msg').textContent=msg||'Conectando…';}
 function doneConn(){document.getElementById('conn-ov').style.display='none';}
 function showGameUI(yes){
-  document.getElementById('fab-group').style.display=yes?'flex':'none';
-  document.getElementById('theme-picker').style.display=yes?'flex':'none';
+  document.getElementById('side-panel').style.display=yes?'flex':'none';
+  if(!yes){
+    document.getElementById('theme-dropdown').classList.remove('open');
+    document.getElementById('music-panel').classList.remove('open');
+  }
 }
 
 // ── Table CRUD ──────────────────────────────────────────────────────────────
@@ -840,7 +993,9 @@ window.leaveTable=async()=>{
   if(unsubFn){unsubFn();unsubFn=null;}
   myId=null;myNick=null;code=null;isHost=false;raiseOpen=false;winnerShown=false;
   if(cdTimer)clearInterval(cdTimer);
-  stopBgMusic();bgStarted=false;
+  stopBgMusic();
+  // Stop YouTube player if running
+  try{if(window.mpPlayer)window.mpPlayer.stopVideo();}catch(e){}
   document.getElementById('rejoin-ov').style.display='none';
   document.getElementById('win-ov').style.display='none';
   showGameUI(false);
@@ -858,8 +1013,6 @@ function onStateChange(state){
     return;
   }
   show('game-screen');showGameUI(true);
-  // Start bg music on first interaction with game
-  if(!bgStarted&&!bgMuted){try{getACtx().resume().then(()=>startBgMusic());}catch(e){startBgMusic();}}
   renderTable(state);
   if(state.activePlayerIdx!==prevActiveIdx){
     if(state.players[state.activePlayerIdx]?.id===myId)sndTurn();
@@ -1066,7 +1219,7 @@ function renderSeats(state){
     if(p.folded&&!isMe)avc+=' folded';
     if(p.allIn)avc+=' allin';
     if(isMe)avc+=' me';
-    if(isD)avc+=' dealer';
+    // NO dealer class on avatar — dealer chip shown separately
 
     let cardsHtml='';
     if(isMe&&p.holeCards?.length===2){
@@ -1081,13 +1234,15 @@ function renderSeats(state){
     else if(p.allIn)stHtml='<div class="sstatus ai">ALL IN</div>';
 
     const betHtml=p.bet>0?`<div class="sbet-bubble">$${p.bet.toLocaleString()}</div>`:'';
+    const dealerHtml=isD?'<span class="dealer-chip">D</span>':'';
+    const turnHtml=isAct?'<div class="turn-arrow"></div>':'';
 
-    // Use pos.x/pos.y directly (already W,H-space coords)
     html+=`<div class="seat" style="left:${pos.x}px;top:${pos.y}px">
+      ${turnHtml}
       <div class="${avc}">${p.nick.charAt(0).toUpperCase()}</div>
-      <div class="seat-info">
-        <div class="sname">${isMe?'✦ ':''} ${p.nick}</div>
-        <div class="schips">$${p.chips.toLocaleString()}</div>
+      <div class="seat-info" style="display:flex;align-items:center;gap:4px;justify-content:center">
+        <div><div class="sname">${isMe?'✦ ':''} ${p.nick}</div><div class="schips">$${p.chips.toLocaleString()}</div></div>
+        ${dealerHtml}
       </div>
       ${betHtml}${cardsHtml}${stHtml}
     </div>`;
