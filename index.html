@@ -685,6 +685,19 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 
 <script>
 window.__FB__ = /* FIREBASE_CONFIG_PLACEHOLDER */null;
+// Guard: disable action buttons until module is ready
+document.addEventListener('DOMContentLoaded',()=>{
+  ['btn-create','btn-join'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.disabled=true;el.style.opacity='0.5';}
+  });
+});
+window.__moduleReady=()=>{
+  ['btn-create','btn-join'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.disabled=false;el.style.opacity='';}
+  });
+};
 </script>
 <script type="module">
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -1337,6 +1350,7 @@ window.onRaise=(v)=>{raiseVal=parseInt(v);document.getElementById('rlbl').textCo
 window.confirmRaise=()=>{doAction('raise',raiseVal);raiseOpen=false;document.getElementById('raise-row').style.display='none';};
 
 tryAutoInit();
+window.__moduleReady && window.__moduleReady();
 </script>
 </body>
 </html>
