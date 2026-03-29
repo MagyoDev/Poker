@@ -67,18 +67,7 @@ body.theme-black { --felt:#1a1a1a; --felt-light:#252525; --felt-dark:#111; }
 .wstatus { font-family:'JetBrains Mono',monospace; font-size:.62rem; color:rgba(201,168,76,.5); margin-top:.5rem; }
 hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 0; }
 
-/* YouTube player in lobby */
-.yt-section { margin-top:1rem; }
-.yt-ttl { font-family:'JetBrains Mono',monospace; font-size:.6rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(201,168,76,.5); margin-bottom:.5rem; }
-.yt-input-row { display:flex; gap:.4rem; }
-.yt-input-row input { flex:1; margin-bottom:0; font-size:.75rem; padding:.5rem .7rem; }
-.yt-btn { padding:.5rem .8rem; background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.35); border-radius:8px; color:var(--gold); font-family:'JetBrains Mono',monospace; font-size:.65rem; cursor:pointer; white-space:nowrap; }
-.yt-btn:hover { background:rgba(201,168,76,.28); }
-.yt-player-wrap { margin-top:.6rem; border-radius:8px; overflow:hidden; position:relative; background:#000; }
-.yt-player-wrap iframe { width:100%; height:140px; border:none; display:block; }
-.yt-controls { display:flex; gap:.4rem; margin-top:.4rem; }
-.yt-ctrl-btn { flex:1; padding:.38rem; background:rgba(0,0,0,.5); border:1px solid rgba(201,168,76,.2); border-radius:6px; color:rgba(201,168,76,.7); font-family:'JetBrains Mono',monospace; font-size:.6rem; cursor:pointer; }
-.yt-ctrl-btn:hover { background:rgba(201,168,76,.1); }
+
 
 /* GAME TABLE */
 #game-screen { flex-direction:column; background:var(--felt-dark); }
@@ -87,13 +76,14 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .tbar-name { font-family:'Playfair Display',serif; font-size:1rem; color:var(--gold); }
 .tbar-chips { font-family:'JetBrains Mono',monospace; font-size:.78rem; }
 .tbar-chips span { color:var(--gold); font-weight:600; }
-.felt-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+/* felt-wrap fills remaining space, all green */
+.felt-wrap { flex:1; display:flex; flex-direction:column; background:var(--felt-dark); position:relative; overflow:hidden; }
+.oval-wrap { position:relative; display:flex; justify-content:center; flex:1; margin:.5rem auto 0; width:min(860px,98vw); }
 
 /* OVAL */
-.oval-wrap { position:relative; display:flex; justify-content:center; margin:1rem auto 0; width:min(700px,96vw); }
-.oval { position:relative; width:100%; height:min(320px,45vw); background:radial-gradient(ellipse at center,var(--felt-light) 0%,var(--felt) 58%,var(--felt-dark) 100%); border-radius:50%; border:8px solid #2d1a00; box-shadow:0 0 0 3px var(--gold-dark),0 10px 40px rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; flex-direction:column; }
+.oval { position:relative; width:100%; height:min(420px,52vw); background:radial-gradient(ellipse at center,var(--felt-light) 0%,var(--felt) 58%,var(--felt-dark) 100%); border-radius:50%; border:8px solid #2d1a00; box-shadow:0 0 0 3px var(--gold-dark),0 10px 40px rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; flex-direction:column; }
 .oval::before { content:''; position:absolute; inset:12px; border-radius:50%; border:1px solid rgba(201,168,76,.1); }
-.seats-wrap { position:absolute; inset:-65px; pointer-events:none; }
+.seats-wrap { position:absolute; inset:-72px; pointer-events:none; }
 .seat { position:absolute; display:flex; flex-direction:column; align-items:center; gap:.18rem; pointer-events:all; transform:translate(-50%,-50%); }
 .av { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#2c3e50,#1a252f); border:2px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:var(--cream); font-family:'Playfair Display',serif; transition:all .3s; position:relative; }
 .av.myturn { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,.3),0 0 20px rgba(201,168,76,.4); animation:pg 1.5s ease-in-out infinite; }
@@ -151,16 +141,16 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .card.down::after { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Crect width='10' height='10' fill='none' stroke='rgba(255,255,255,.08)' stroke-width='.5'/%3E%3C/svg%3E"); }
 .card.ph { background:rgba(255,255,255,.04); border:1px dashed rgba(201,168,76,.15); box-shadow:none; }
 
-/* Hand panel */
-.hand-panel { margin:.45rem 1rem .25rem; background:rgba(0,0,0,.4); border:1px solid rgba(201,168,76,.16); border-radius:10px; padding:.6rem .85rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
-.hole-cards { display:flex; gap:5px; }
+/* Hand panel — floats over felt at bottom of oval area */
+.hand-panel { position:absolute; bottom:0; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:1rem; background:rgba(0,0,0,.55); border:1px solid rgba(201,168,76,.2); border-radius:12px 12px 0 0; padding:.55rem 1.2rem; min-width:280px; max-width:460px; width:auto; backdrop-filter:blur(6px); z-index:10; }
+.hole-cards { display:flex; gap:6px; }
 .hr-wrap { flex:1; min-width:130px; }
 .hr-lbl { font-family:'JetBrains Mono',monospace; font-size:.55rem; text-transform:uppercase; letter-spacing:.1em; color:rgba(201,168,76,.5); }
 .hr-name { font-family:'Playfair Display',serif; font-size:1rem; color:var(--gold); font-weight:700; }
 .hr-desc { font-size:.7rem; color:rgba(245,240,232,.5); font-style:italic; }
 
-/* Log */
-.glog { padding:.18rem 1rem; font-family:'JetBrains Mono',monospace; font-size:.6rem; color:rgba(245,240,232,.42); min-height:20px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; background:rgba(0,0,0,.3); }
+/* Log — small pill overlaid on felt top-left */
+.glog { position:absolute; bottom:0; left:0; right:0; padding:.22rem 1.1rem; font-family:'JetBrains Mono',monospace; font-size:.6rem; color:rgba(245,240,232,.45); background:rgba(0,0,0,.38); text-align:center; letter-spacing:.02em; pointer-events:none; z-index:5; }
 
 /* Action area */
 .act-area { padding:.6rem 1rem; background:rgba(0,0,0,.5); border-top:1px solid rgba(201,168,76,.1); }
@@ -224,15 +214,15 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
 .rejoin-card .rebuy-amt { font-family:'JetBrains Mono',monospace; font-size:1.4rem; color:var(--gold-light); margin:.5rem 0 1rem; }
 
 @media(max-width:600px){
-  .oval{height:min(230px,48vw);}
-  .seats-wrap{inset:-50px;}
+  .oval{height:min(260px,52vw);}
+  .seats-wrap{inset:-52px;}
   .card{width:30px;height:44px;font-size:.7rem;}
   .card.sm{width:22px;height:32px;font-size:.55rem;}
   .av{width:30px;height:30px;font-size:.8rem;}
   .abtn{font-size:.6rem;padding:.4rem .4rem;min-width:55px;}
   .tbar{padding:.4rem .7rem;}
   .tbar-name{font-size:.85rem;}
-  .hand-panel{padding:.45rem .6rem;gap:.6rem;}
+  .hand-panel{padding:.45rem .8rem;gap:.5rem;min-width:220px;}
   .hr-name{font-size:.88rem;}
   .win-card{padding:1.2rem 1.5rem;}
   .win-card h2{font-size:1.6rem;}
@@ -306,22 +296,6 @@ hr.sep { border:none; border-top:1px solid rgba(201,168,76,.12); margin:1.25rem 
       <div class="wstatus" id="w-status"></div>
       <div id="w-actions" style="margin-top:1rem;"></div>
 
-      <!-- YouTube Lobby Player -->
-      <hr class="sep">
-      <div class="yt-section">
-        <div class="yt-ttl">🎵 Música do Lobby (YouTube)</div>
-        <div class="yt-input-row">
-          <input id="yt-url" type="text" placeholder="Cole o link do YouTube..." style="font-size:.72rem;padding:.45rem .7rem;margin-bottom:0">
-          <button class="yt-btn" onclick="loadYT()">Tocar</button>
-        </div>
-        <div id="yt-player-wrap" class="yt-player-wrap" style="display:none">
-          <iframe id="yt-iframe" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-          <div class="yt-controls">
-            <button class="yt-ctrl-btn" onclick="ytMuteSelf()">🔇 Mutar só pra mim</button>
-            <button class="yt-ctrl-btn" onclick="ytPauseAll()">⏸ Pausar para todos</button>
-          </div>
-        </div>
-      </div>
 
       <hr class="sep">
       <button class="btn btn-outline" style="width:auto;padding:.5rem 1.5rem;" onclick="leaveTable()">Sair da Mesa</button>
@@ -454,7 +428,6 @@ let myId = null, myNick = null, code = null, isHost = false;
 let raiseVal = 0, raiseOpen = false;
 let cdTimer = null, winnerShown = false;
 let soundEnabled = true;
-let ytMuted = false;
 let audioCtx = null;
 
 // ─── Audio ─────────────────────────────────────────────────────────────────
@@ -527,65 +500,6 @@ window.toggleHands = () => {
   const m = document.getElementById('hands-modal');
   m.style.display = m.style.display === 'none' ? 'flex' : 'none';
 };
-
-// ─── YouTube Lobby ─────────────────────────────────────────────────────────
-window.loadYT = () => {
-  const url = document.getElementById('yt-url').value.trim();
-  const vid = ytExtractId(url);
-  if (!vid) { alert('Link do YouTube inválido!'); return; }
-  const wrap = document.getElementById('yt-player-wrap');
-  const iframe = document.getElementById('yt-iframe');
-  iframe.src = `https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&modestbranding=1`;
-  wrap.style.display = 'block';
-  // Share yt vid id via firebase if connected
-  if (DB && code) {
-    dbGet('tables/' + code).then(st => {
-      if (st) { st.ytVid = vid; st.ytPaused = false; dbSet('tables/' + code, st); }
-    });
-  }
-};
-
-window.ytMuteSelf = () => {
-  ytMuted = !ytMuted;
-  const iframe = document.getElementById('yt-iframe');
-  // Re-load with mute param
-  const src = iframe.src;
-  if (ytMuted) {
-    iframe.src = src.replace('&mute=1', '').replace('&mute=0', '') + '&mute=1';
-  } else {
-    iframe.src = src.replace('&mute=1', '') + '&mute=0';
-  }
-};
-
-window.ytPauseAll = () => {
-  if (!DB || !code) { alert('Conecte ao Firebase primeiro.'); return; }
-  dbGet('tables/' + code).then(st => {
-    if (st) { st.ytPaused = !st.ytPaused; dbSet('tables/' + code, st); }
-  });
-};
-
-function ytExtractId(url) {
-  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
-  return m ? m[1] : null;
-}
-
-function syncYT(state) {
-  if (!state.ytVid) return;
-  const wrap = document.getElementById('yt-player-wrap');
-  const iframe = document.getElementById('yt-iframe');
-  const vid = state.ytVid;
-  const current = ytExtractId(iframe.src || '');
-  if (current !== vid) {
-    iframe.src = `https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&modestbranding=1${ytMuted ? '&mute=1' : ''}`;
-    wrap.style.display = 'block';
-  }
-  // Pause/play via src manipulation
-  if (state.ytPaused && iframe.src && !iframe.src.includes('&autoplay=0')) {
-    iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0');
-  } else if (!state.ytPaused && iframe.src && iframe.src.includes('autoplay=0')) {
-    iframe.src = iframe.src.replace('autoplay=0', 'autoplay=1');
-  }
-}
 
 // ─── Firebase helpers ──────────────────────────────────────────────────────
 function initFB(url, apiKey, projectId) {
@@ -705,8 +619,7 @@ window.createTable = async () => {
     phase:'waiting',
     players:[{id:myId,nick,chips,holeCards:[],folded:false,bet:0,allIn:false,isHost:true,active:true}],
     deck:[],community:[],pot:0,currentBet:0,activePlayerIdx:-1,dealerIdx:0,
-    log:[nick+' criou a mesa.'],handNum:0,actedThisRound:[],
-    ytVid:null,ytPaused:false};
+    log:[nick+' criou a mesa.'],handNum:0,actedThisRound:[]};
   await dbSet('tables/'+code, state);
   doneConn();
   showWaiting(state);
@@ -772,8 +685,6 @@ function renderWaiting(state){
   } else {
     wa.innerHTML='<div class="wstatus">Aguardando o anfitrião iniciar…</div>';
   }
-  // Sync YT
-  syncYT(state);
 }
 
 window.leaveTable = async () => {
@@ -803,9 +714,6 @@ function onStateChange(state){
   if(!state)return;
   const me=state.players?.find(p=>p.id===myId);
   if(me)isHost=!!me.isHost;
-
-  // YT sync everywhere
-  syncYT(state);
 
   if(state.phase==='waiting'){
     if(document.getElementById('wait-screen').classList.contains('active'))renderWaiting(state);
