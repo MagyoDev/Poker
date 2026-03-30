@@ -1303,7 +1303,7 @@ window.createTable=async()=>{
   const lives=(isNaN(livesRaw)||livesRaw===0)?999:livesRaw; // 0 = modo clássico infinito
   const state={code,name,config:{sb,bb,startChips:chips,maxPlayers:maxP,rebuyChips:rebuy,startLives:lives},
     phase:'waiting',
-    players:[{id:myId,nick,chips,lives,photo:myProfilePhoto||null,holeCards:[],folded:false,bet:0,allIn:false,isHost:true,active:true,allinCooldown:0}],
+    players:[{id:myId,nick,chips,lives,holeCards:[],folded:false,bet:0,allIn:false,isHost:true,active:true,allinCooldown:0}],
     deck:[],community:[],pot:0,currentBet:0,activePlayerIdx:-1,dealerIdx:0,
     log:[nick+' criou a mesa.'],handNum:0,actedThisRound:[],ytVid:null,ytTs:0};
   await dbSet('tables/'+code,state);
@@ -1323,7 +1323,7 @@ window.joinTable=async()=>{
   myId=genId();myNick=nick;code=c;isHost=false;
   const mid=state.phase!=='waiting';
   const jlives=state.config.startLives||3;
-  state.players.push({id:myId,nick,chips:state.config.startChips,lives:jlives,photo:myProfilePhoto||null,holeCards:[],folded:true,bet:0,allIn:false,active:!mid,sittingOut:mid,allinCooldown:0});
+  state.players.push({id:myId,nick,chips:state.config.startChips,lives:jlives,holeCards:[],folded:true,bet:0,allIn:false,active:!mid,sittingOut:mid,allinCooldown:0});
   state.log.push(nick+(mid?' entrou (próxima mão)':' entrou na mesa.'));
   connecting('Entrando…');
   await dbSet('tables/'+code,state);
@@ -1789,16 +1789,6 @@ function renderComm(comm){
   for(let i=0;i<5;i++)c.appendChild(comm&&comm[i]?mkCard(comm[i]):mkCard(null));
 }
 
-// ── Avatar helper: renders initial letter OR profile photo ────────────────────
-function avatarHtml(p, extraClass=''){
-  const cls='av'+(extraClass?' '+extraClass:'');
-  if(p.photo){
-    // Has a profile photo stored in Firebase state
-    return `<div class="${cls} has-photo"><img src="${p.photo}" alt="${p.nick}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>`;
-  }
-  return `<div class="${cls}">${p.nick.charAt(0).toUpperCase()}</div>`;
-}
-
 // ── Seat layout ──────────────────────────────────────────────────────────────
 // Positions seats around the rail border. W/H = rail dimensions.
 // Seats use ellipse with radii slightly outside the rail center.
@@ -1869,7 +1859,7 @@ function renderSeats(state){
 
     html+=`<div class="seat" style="left:${pos.x}px;top:${pos.y}px">
       ${turnHtml}
-      ${avatarHtml(p, avc.slice(2).trim())}
+      <div class="${avc}">${p.nick.charAt(0).toUpperCase()}</div>
       <div class="seat-info" style="display:flex;align-items:center;justify-content:center">
         <div>
           <div class="sname">${isMe?'✦ ':''} ${p.nick}</div>
@@ -1880,6 +1870,15 @@ function renderSeats(state){
     </div>`;
   });
   wrap.innerHTML=html;
+  // Apply profile photo to my avatar
+  if(myId&&myProfilePhoto){
+    const mySlot=state.players.findIndex(p=>p.id===myId);
+    if(mySlot>=0){
+      const myRel=(mySlot-state.players.findIndex(p=>p.id===myId)+state.players.length)%state.players.length;
+      const allAvatars=wrap.querySelectorAll('.av.me');
+      allAvatars.forEach(av=>applyMyPhoto(av));
+    }
+  }
 }
 
 function renderMyCards(me,state){
@@ -1940,18 +1939,11 @@ window.handlePhotoUpload=(input,prefix)=>{
     try{localStorage.setItem('pn_profile_photo',myProfilePhoto);}catch(ex){}
     const prev=document.getElementById(prefix+'-photo-prev');
     if(prev){prev.innerHTML=`<img src="${myProfilePhoto}" alt="foto">`;}
+    // Sync other prefix preview too
     ['c','j'].forEach(p=>{
       const el=document.getElementById(p+'-photo-prev');
       if(el&&p!==prefix)el.innerHTML=`<img src="${myProfilePhoto}" alt="foto">`;
     });
-    // Se já está na mesa, sincroniza foto no Firebase em tempo real
-    if(DB&&code&&myId){
-      dbGet('tables/'+code).then(st=>{
-        if(!st)return;
-        const me=st.players.find(p=>p.id===myId);
-        if(me){me.photo=myProfilePhoto;dbSet('tables/'+code,st);}
-      }).catch(()=>{});
-    }
   };
   reader.readAsDataURL(file);
 };
@@ -2108,10 +2100,10 @@ function renderSeatsSpectator(state){
   state.players.forEach((p,i)=>{
     const pos=positions[i];
     const isAct=state.activePlayerIdx===i&&!isEnd&&state.phase!=='waiting';
-    let extraCls='';
-    if(isAct)extraCls+=' myturn';
-    if(p.folded)extraCls+=' folded';
-    if(p.allIn)extraCls+=' allin';
+    let avc='av';
+    if(isAct)avc+=' myturn';
+    if(p.folded)avc+=' folded';
+    if(p.allIn)avc+=' allin';
     let cardsHtml='';
     if(p.holeCards?.length===2&&state.phase!=='waiting'){
       if(p.revealed||isEnd){
@@ -2125,64 +2117,26 @@ function renderSeatsSpectator(state){
     let stHtml='';
     if(p.folded)stHtml='<div class="sstatus fold">FOLD</div>';
     else if(p.allIn)stHtml='<div class="sstatus ai">ALL IN</div>';
-    // Lives for spectator view
-    const maxL=state.config?.startLives||3;
-    const curL=p.lives!==undefined?p.lives:maxL;
-    const livesHtml=maxL<999?`<div class="seat-lives">${'❤️'.repeat(Math.max(0,Math.min(curL,maxL)))}${'🖤'.repeat(Math.max(0,maxL-curL))}</div>`:'';
     html+=`<div class="seat" style="left:${pos.x}px;top:${pos.y}px">
       ${turnHtml}
-      ${avatarHtml(p, extraCls.trim())}
+      <div class="${avc}">${p.nick.charAt(0).toUpperCase()}</div>
       <div class="seat-info"><div><div class="sname">${p.nick}</div><div class="schips">$${p.chips.toLocaleString()}</div></div></div>
-      ${livesHtml}${betHtml}${cardsHtml}${stHtml}
+      ${betHtml}${cardsHtml}${stHtml}
     </div>`;
   });
   wrap.innerHTML=html;
 }
 
 // ── Leave Confirmation ────────────────────────────────────────────────────────
-let _leaveModalCallback=null;
-
 window.confirmLeaveTable=()=>{
-  if(isSpectator){
-    openLeaveModal('Sair como Espectador?','Você deixará de acompanhar esta mesa.',leaveSpectator);
-    return;
-  }
+  if(isSpectator){leaveSpectator();return;}
   const phase=window._lastPhase||'';
   const inGame=phase!=='waiting'&&phase!=='waiting_next'&&phase!=='';
   if(inGame){
-    openLeaveModal(
-      'Sair da Mesa?',
-      'Você está em uma mão ativa.\nSair agora dará fold automático na sua mão.',
-      leaveTable
-    );
-  } else {
-    openLeaveModal('Sair da Mesa?','Tem certeza que deseja abandonar a mesa?',leaveTable);
+    if(!confirm('Você está em uma mão ativa. Sair agora vai dar fold automaticamente. Confirma?'))return;
   }
+  leaveTable();
 };
-
-function openLeaveModal(title, msg, callback){
-  _leaveModalCallback=callback;
-  document.getElementById('leave-modal-title').textContent=title;
-  document.getElementById('leave-modal-msg').textContent=msg;
-  const m=document.getElementById('leave-modal');
-  m.style.display='flex';
-}
-
-window.leaveModalConfirm=()=>{
-  document.getElementById('leave-modal').style.display='none';
-  if(_leaveModalCallback) _leaveModalCallback();
-  _leaveModalCallback=null;
-};
-
-window.leaveModalClose=()=>{
-  document.getElementById('leave-modal').style.display='none';
-  _leaveModalCallback=null;
-};
-
-// Close on backdrop click
-document.getElementById('leave-modal')?.addEventListener('click',e=>{
-  if(e.target===document.getElementById('leave-modal')) leaveModalClose();
-});
 
 window.leaveSpectator=()=>{
   if(unsubFn){unsubFn();unsubFn=null;}
@@ -2213,19 +2167,6 @@ window.toggleRevealCards=async()=>{
     if(me){me.revealed=myCardsRevealed;await dbSet('tables/'+code,state);}
   }catch(e){}
 };
-
-<!-- Leave Confirmation Modal -->
-<div id="leave-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
-  <div style="background:linear-gradient(135deg,#1a1a1a,#111);border:1px solid rgba(201,168,76,.35);border-radius:18px;padding:2rem 2.2rem;max-width:340px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.9);">
-    <div style="font-size:2.2rem;margin-bottom:.5rem;">🚪</div>
-    <h2 style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold);margin-bottom:.5rem;" id="leave-modal-title">Sair da Mesa?</h2>
-    <p style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(245,240,232,.5);margin-bottom:1.4rem;line-height:1.6;" id="leave-modal-msg">Tem certeza que deseja sair?</p>
-    <div style="display:flex;flex-direction:column;gap:.6rem;">
-      <button onclick="leaveModalConfirm()" style="padding:.72rem;border:none;border-radius:9px;background:#e74c3c;color:#fff;font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">Sim, sair</button>
-      <button onclick="leaveModalClose()" style="padding:.72rem;border:1px solid rgba(201,168,76,.3);border-radius:9px;background:transparent;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.78rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(201,168,76,.08)'" onmouseout="this.style.background='transparent'">Cancelar</button>
-    </div>
-  </div>
-</div>
 </script>
 </body>
 </html>
