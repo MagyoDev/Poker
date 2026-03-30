@@ -424,6 +424,123 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
 .skin-name { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--cream); }
 .skin-desc { font-family:'JetBrains Mono',monospace; font-size:.52rem; color:rgba(245,240,232,.4); margin-top:2px; }
 .skin-close { width:100%; margin-top:1rem; padding:.6rem; background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.25); border-radius:8px; color:var(--gold); font-family:'JetBrains Mono',monospace; font-size:.7rem; cursor:pointer; }
+/* ── LIVES & COOLDOWN ── */
+.seat-lives {
+  font-size:.55rem; line-height:1; text-align:center;
+  margin-top:1px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.8));
+}
+.seat-cooldown {
+  font-family:'JetBrains Mono',monospace; font-size:.48rem;
+  background:rgba(231,76,60,.85); color:#fff; border-radius:8px;
+  padding:1px 5px; text-align:center; margin-top:1px;
+}
+.abtn:disabled {
+  opacity:.4; cursor:not-allowed !important;
+  filter:grayscale(.7);
+}
+.abtn:disabled:hover { filter:grayscale(.7); transform:none !important; }
+
+/* All-in runout overlay text */
+.allin-runout-badge {
+  position:absolute; top:6px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(135deg,#e74c3c,#c0392b);
+  color:#fff; font-family:'JetBrains Mono',monospace;
+  font-size:.58rem; padding:.2rem .8rem; border-radius:20px;
+  letter-spacing:.08em; font-weight:700; white-space:nowrap;
+  box-shadow:0 2px 12px rgba(231,76,60,.5);
+  animation:pulse-red .8s ease-in-out infinite alternate;
+  z-index:10;
+}
+@keyframes pulse-red {
+  from{box-shadow:0 2px 8px rgba(231,76,60,.4)}
+  to{box-shadow:0 2px 20px rgba(231,76,60,.8)}
+}
+
+/* ── SPECTATOR BANNER ── */
+.spectator-banner {
+  display:none; align-items:center; justify-content:center; gap:.6rem;
+  background:rgba(0,0,0,.7); border-bottom:1px solid rgba(74,158,255,.3);
+  padding:.3rem 1rem; font-family:'JetBrains Mono',monospace;
+  font-size:.65rem; color:#4a9eff; letter-spacing:.08em;
+}
+.spectator-banner.show { display:flex; }
+.spectator-badge { background:#4a9eff22; border:1px solid #4a9eff55; border-radius:20px; padding:.15rem .6rem; }
+
+/* ── PROFILE PHOTO ── */
+.av.has-photo { padding:0; overflow:hidden; }
+.av.has-photo img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+
+/* ── SETUP PROFILE PHOTO ── */
+.profile-photo-section { margin-bottom:1rem; display:flex; flex-direction:column; align-items:center; gap:.5rem; }
+.profile-photo-preview {
+  width:72px; height:72px; border-radius:50%;
+  background:rgba(255,255,255,.05); border:2px dashed rgba(201,168,76,.3);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; overflow:hidden; transition:border-color .2s;
+  position:relative;
+}
+.profile-photo-preview:hover { border-color:rgba(201,168,76,.6); }
+.profile-photo-preview img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.profile-photo-preview .ppp-placeholder { font-size:1.6rem; opacity:.4; }
+.profile-photo-lbl { font-family:'JetBrains Mono',monospace; font-size:.58rem; color:rgba(201,168,76,.5); text-align:center; }
+
+/* ── MUSIC QUEUE ── */
+.mp-queue-section { margin-top:.5rem; }
+.mp-queue-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.4rem; }
+.mp-queue-title { font-family:'JetBrains Mono',monospace; font-size:.58rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(201,168,76,.5); }
+.mp-queue-clear { font-family:'JetBrains Mono',monospace; font-size:.52rem; color:rgba(245,240,232,.3); background:none; border:none; cursor:pointer; }
+.mp-queue-clear:hover { color:#e74c3c; }
+.mp-queue-list { max-height:100px; overflow-y:auto; display:flex; flex-direction:column; gap:.25rem; }
+.mp-queue-list::-webkit-scrollbar { width:3px; }
+.mp-queue-list::-webkit-scrollbar-thumb { background:rgba(201,168,76,.3); border-radius:3px; }
+.mp-queue-item {
+  display:flex; align-items:center; gap:.4rem;
+  background:rgba(255,255,255,.03); border-radius:6px;
+  padding:.3rem .45rem; cursor:pointer; transition:background .15s;
+}
+.mp-queue-item:hover { background:rgba(255,255,255,.07); }
+.mp-queue-item.active { background:rgba(201,168,76,.12); border-left:2px solid var(--gold); }
+.mp-queue-item-idx { font-family:'JetBrains Mono',monospace; font-size:.48rem; color:rgba(201,168,76,.4); min-width:14px; }
+.mp-queue-item-title { font-family:'JetBrains Mono',monospace; font-size:.58rem; color:rgba(245,240,232,.7); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mp-queue-item-del { font-size:.65rem; color:rgba(245,240,232,.2); background:none; border:none; cursor:pointer; line-height:1; padding:0 2px; }
+.mp-queue-item-del:hover { color:#e74c3c; }
+.mp-mode-row { display:flex; gap:.35rem; margin-top:.4rem; }
+.mp-mode-btn { flex:1; padding:.3rem; background:rgba(255,255,255,.04); border:1px solid rgba(201,168,76,.15); border-radius:6px; color:rgba(245,240,232,.45); font-family:'JetBrains Mono',monospace; font-size:.52rem; cursor:pointer; transition:all .15s; }
+.mp-mode-btn.active { background:rgba(201,168,76,.15); border-color:rgba(201,168,76,.4); color:var(--gold); }
+.mp-playlist-row { display:flex; gap:.4rem; margin-top:.4rem; }
+.mp-playlist-url { flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(201,168,76,.15); border-radius:6px; color:var(--cream); font-family:'JetBrains Mono',monospace; font-size:.58rem; padding:.32rem .5rem; outline:none; min-width:0; }
+.mp-playlist-url::placeholder { color:rgba(245,240,232,.2); }
+.mp-playlist-url:focus { border-color:var(--gold); }
+.mp-playlist-load { padding:.32rem .55rem; background:rgba(74,158,255,.15); border:1px solid rgba(74,158,255,.3); border-radius:6px; color:#4a9eff; font-family:'JetBrains Mono',monospace; font-size:.56rem; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+.mp-playlist-load:hover { background:rgba(74,158,255,.28); }
+
+/* ── BACKGROUND PICKER (in theme dropdown) ── */
+.theme-dd-section-title { font-family:'JetBrains Mono',monospace; font-size:.52rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(201,168,76,.38); margin-top:.5rem; padding-top:.5rem; border-top:1px solid rgba(201,168,76,.1); }
+.bg-picker-row { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.35rem; }
+.bg-swatch {
+  width:28px; height:28px; border-radius:6px; cursor:pointer;
+  border:2px solid transparent; transition:all .18s;
+  background-size:cover; background-position:center;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.8rem; overflow:hidden;
+}
+.bg-swatch:hover, .bg-swatch.active { border-color:var(--gold); transform:scale(1.15); }
+.bg-upload-btn {
+  width:100%; margin-top:.4rem;
+  padding:.32rem; background:rgba(255,255,255,.04);
+  border:1px dashed rgba(201,168,76,.25); border-radius:6px;
+  color:rgba(201,168,76,.55); font-family:'JetBrains Mono',monospace;
+  font-size:.55rem; cursor:pointer; text-align:center; transition:all .15s;
+}
+.bg-upload-btn:hover { border-color:rgba(201,168,76,.5); color:var(--gold); }
+
+/* ── LEAVE TABLE BUTTON (in side panel) ── */
+.side-btn.leave { border-color:rgba(231,76,60,.4); color:#e74c3c; }
+.side-btn.leave:hover { background:rgba(231,76,60,.2); border-color:#e74c3c; transform:scale(1.08); }
+
+/* ── SPECTATOR MODE join section ── */
+#tc-s .cfg { cursor:default; }
+
 .act-area { padding:.55rem 1rem; background:rgba(0,0,0,.6); border-top:1px solid rgba(201,168,76,.1); }
 .act-btns { display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.28rem; }
 .abtn { flex:1; min-width:72px; padding:.6rem .6rem; border:none; border-radius:9px; font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:all .15s; }
@@ -496,8 +613,16 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
     <div class="tabs">
       <button class="tab on" onclick="swTab('c')">Criar Mesa</button>
       <button class="tab" onclick="swTab('j')">Entrar</button>
+      <button class="tab" onclick="swTab('s')">Espectador</button>
     </div>
     <div id="tc-c" class="tc on">
+      <div class="profile-photo-section">
+        <div class="profile-photo-preview" id="c-photo-prev" onclick="triggerPhotoUpload('c')">
+          <span class="ppp-placeholder">📷</span>
+        </div>
+        <div class="profile-photo-lbl">Foto de perfil (opcional) · Salva localmente</div>
+        <input type="file" id="c-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this,'c')">
+      </div>
       <label>Seu Apelido</label>
       <input id="c-nick" type="text" placeholder="Ex: JoãoAS" maxlength="12">
       <div class="cfg">
@@ -520,17 +645,43 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
           <label>Rebuy (fichas ao voltar)</label>
           <select id="c-rebuy"><option value="500">500</option><option value="1000" selected>1.000</option><option value="2000">2.000</option><option value="5000">5.000</option></select>
         </div>
+        <div style="margin-top:.75rem">
+          <label>❤️ Vidas por Jogador</label>
+          <select id="c-lives">
+            <option value="1">1 vida</option>
+            <option value="2">2 vidas</option>
+            <option value="3" selected>3 vidas (padrão)</option>
+            <option value="5">5 vidas</option>
+            <option value="0">∞ Sem limite (modo clássico)</option>
+          </select>
+        </div>
       </div>
       <button class="btn btn-gold" id="btn-create" onclick="createTable()">Criar Mesa & Gerar Código</button>
       <div class="hint">Um código de 4 letras será gerado para compartilhar</div>
     </div>
     <div id="tc-j" class="tc">
+      <div class="profile-photo-section">
+        <div class="profile-photo-preview" id="j-photo-prev" onclick="triggerPhotoUpload('j')">
+          <span class="ppp-placeholder">📷</span>
+        </div>
+        <div class="profile-photo-lbl">Foto de perfil (opcional) · Salva localmente</div>
+        <input type="file" id="j-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this,'j')">
+      </div>
       <label>Seu Apelido</label>
       <input id="j-nick" type="text" placeholder="Ex: MariaRainha" maxlength="12">
       <label>Código da Mesa</label>
       <input id="j-code" type="text" placeholder="EX: A3K7" maxlength="6" style="text-transform:uppercase;letter-spacing:.3em;font-size:1.2rem;text-align:center">
       <button class="btn btn-gold" id="btn-join" onclick="joinTable()">Entrar na Mesa</button>
       <div class="hint">Peça o código ao anfitrião</div>
+    </div>
+    <div id="tc-s" class="tc">
+      <div class="cfg">
+        <div class="cfg-ttl">👁 Modo Espectador — Assista sem jogar</div>
+      </div>
+      <label>Código da Mesa</label>
+      <input id="s-code" type="text" placeholder="EX: A3K7" maxlength="6" style="text-transform:uppercase;letter-spacing:.3em;font-size:1.2rem;text-align:center">
+      <button class="btn btn-gold" id="btn-spectate" onclick="spectateTable()">👁 Assistir</button>
+      <div class="hint">Você verá o jogo em tempo real sem participar</div>
     </div>
   </div>
 </div>
@@ -566,9 +717,15 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
     </div>
     <div class="tbar-right">
       <div class="tbar-chips">Fichas: <span id="g-chips">0</span></div>
+      <div class="tbar-lives" id="tbar-lives" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.05em;"></div>
     </div>
   </div>
 
+  <!-- Winner banner (sits under top bar, above the felt) -->
+  <div class="spectator-banner" id="spectator-banner">
+    <span class="spectator-badge">👁 ESPECTADOR</span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:rgba(74,158,255,.7)">Você está assistindo esta mesa</span>
+  </div>
   <!-- Winner banner (sits under top bar, above the felt) -->
   <div class="winner-banner" id="winner-banner">
     <div class="wb-trophy">🏆</div>
@@ -634,6 +791,7 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
   <button class="side-btn" id="theme-btn" onclick="toggleThemeDropdown()" title="Cor da Mesa">🎨</button>
   <button class="side-btn" onclick="openSkinModal()" title="Skin do Baralho">🃏</button>
   <button class="side-btn" onclick="toggleHands()" title="Mãos do Poker">?</button>
+  <button class="side-btn leave" onclick="confirmLeaveTable()" title="Sair da Mesa">🚪</button>
 </div>
 
 <!-- Theme dropdown (slides from right) -->
@@ -662,10 +820,21 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
     <button class="theme-dd-btn" style="background:#5a1533" onclick="setTheme('maroon')"></button>
     <span class="theme-dd-lbl" onclick="setTheme('maroon')">Vinho</span>
   </div>
+  <!-- Background Section -->
+  <div class="theme-dd-section-title">Fundo da Mesa</div>
+  <div class="bg-picker-row" id="bg-picker-row">
+    <div class="bg-swatch active" data-bg="" style="background:#0d1117;border-color:rgba(201,168,76,.5)" title="Padrão" onclick="setBg('')">✓</div>
+    <div class="bg-swatch" data-bg="felt-dark" style="background:linear-gradient(135deg,#1a3a2a,#0d2018)" title="Floresta" onclick="setBg('felt-dark')"></div>
+    <div class="bg-swatch" data-bg="space" style="background:radial-gradient(ellipse,#1a1a3e,#050510)" title="Espaço" onclick="setBg('space')"></div>
+    <div class="bg-swatch" data-bg="casino" style="background:repeating-linear-gradient(45deg,#1a0a0a 0,#1a0a0a 4px,#200e0e 4px,#200e0e 8px)" title="Cassino" onclick="setBg('casino')"></div>
+    <div class="bg-swatch" data-bg="marble" style="background:linear-gradient(135deg,#1a1a1a,#2a2520,#1a1a1a)" title="Mármore" onclick="setBg('marble')"></div>
+  </div>
+  <button class="bg-upload-btn" onclick="triggerBgUpload()">📁 Imagem personalizada</button>
+  <input type="file" id="bg-file-input" accept="image/*" style="display:none" onchange="handleBgUpload(this)">
 </div>
 
 <!-- Music Player Panel -->
-<div class="music-panel" id="music-panel">
+<div class="music-panel" id="music-panel" style="width:300px">
   <div class="mp-header">
     <div class="mp-title" id="mp-title">Sem música</div>
     <div class="mp-artist" id="mp-artist">Cole um link do YouTube abaixo</div>
@@ -678,9 +847,14 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
     <span id="mp-dur">0:00</span>
   </div>
   <div class="mp-controls">
-    <button class="mp-ctrl" onclick="mpPrev()" title="Reiniciar">⏮</button>
+    <button class="mp-ctrl" onclick="mpPrev()" title="Anterior">⏮</button>
     <button class="mp-play" id="mp-play-btn" onclick="mpTogglePlay()">▶</button>
     <button class="mp-ctrl" onclick="mpNext()" title="Próxima">⏭</button>
+  </div>
+  <div class="mp-mode-row">
+    <button class="mp-mode-btn active" id="mp-mode-seq" onclick="mpSetMode('seq')" title="Sequencial">▶ Seq</button>
+    <button class="mp-mode-btn" id="mp-mode-loop" onclick="mpSetMode('loop')" title="Repetir">🔂 Loop</button>
+    <button class="mp-mode-btn" id="mp-mode-shuf" onclick="mpSetMode('shuf')" title="Aleatório">🔀 Mix</button>
   </div>
   <div class="mp-vol-row">
     <span class="mp-vol-lbl">🔉</span>
@@ -690,7 +864,18 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
   <hr class="mp-divider">
   <div class="mp-input-row">
     <input class="mp-url" id="mp-url" type="text" placeholder="Link do YouTube...">
-    <button class="mp-load" onclick="mpLoad()">▶ Tocar</button>
+    <button class="mp-load" onclick="mpLoad()">+ Fila</button>
+  </div>
+  <div class="mp-playlist-row">
+    <input class="mp-playlist-url" id="mp-playlist-url" type="text" placeholder="Playlist YouTube (URL)...">
+    <button class="mp-playlist-load" onclick="mpLoadPlaylist()">📋 Playlist</button>
+  </div>
+  <div class="mp-queue-section">
+    <div class="mp-queue-header">
+      <span class="mp-queue-title">🎵 Fila (<span id="mp-queue-count">0</span>)</span>
+      <button class="mp-queue-clear" onclick="mpClearQueue()">✕ Limpar</button>
+    </div>
+    <div class="mp-queue-list" id="mp-queue-list"></div>
   </div>
 </div>
 
@@ -717,9 +902,10 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
   <div class="rejoin-card">
     <div style="font-size:2.5rem">💸</div>
     <h2>Sem Fichas!</h2>
-    <p class="rejoin-info">Valor de rebuy acordado na mesa:</p>
+    <div id="rejoin-lives" style="font-size:1.3rem;margin:.4rem 0;letter-spacing:.1em;">❤️❤️❤️</div>
+    <p class="rejoin-info">Usar uma vida para continuar?</p>
     <div class="rebuy-amt" id="rejoin-amt">1.000 fichas</div>
-    <button class="btn btn-gold" onclick="doRebuy()">Voltar à Mesa</button>
+    <button class="btn btn-gold" id="rejoin-rebuy-btn" onclick="doRebuy()">💔 Usar Vida & Voltar</button>
     <button class="btn btn-outline" onclick="leaveTable()">Sair da Mesa</button>
   </div>
 </div>
@@ -816,7 +1002,16 @@ window.toggleHands=()=>{
 
 // ── Music Player (YouTube audio only via iframe API) ──────────────────────
 let mpPlayer=null, mpReady=false, mpPlaying=false, mpProgTimer=null;
-let mpQueue=[], mpQueueIdx=0;
+let mpQueue=[], mpQueueIdx=0, mpMode='seq'; // mode: seq | loop | shuf
+let mpPlayOrder=[];
+
+window.mpSetMode=(m)=>{
+  mpMode=m;
+  ['seq','loop','shuf'].forEach(x=>document.getElementById('mp-mode-'+x).classList.toggle('active',x===m));
+  if(m==='shuf'&&mpQueue.length>0){
+    mpPlayOrder=[...Array(mpQueue.length).keys()].sort(()=>Math.random()-.5);
+  }
+};
 
 window.toggleMusicPanel=()=>{
   const p=document.getElementById('music-panel');
@@ -843,14 +1038,80 @@ window.mpLoad=()=>{
   const vid=ytExtractId(url);
   if(!vid){alert('Link do YouTube inválido!');return;}
   document.getElementById('mp-url').value='';
-  // Sync to Firebase so ALL players in the table hear this music
+  mpAddToQueue(vid, url);
+};
+
+window.mpLoadPlaylist=()=>{
+  const url=document.getElementById('mp-playlist-url').value.trim();
+  if(!url){alert('Cole a URL da playlist do YouTube!');return;}
+  document.getElementById('mp-playlist-url').value='';
+  // Extract playlist ID
+  const pm=url.match(/[?&]list=([A-Za-z0-9_-]+)/);
+  if(!pm){
+    // Maybe it's a direct video - try as single track
+    const vid=ytExtractId(url);
+    if(vid){mpAddToQueue(vid,url);}
+    else{alert('URL inválida. Cole a URL completa da playlist.');}
+    return;
+  }
+  // We can't fetch playlist content without API key - load first video and inform user
+  const vid=ytExtractId(url);
+  if(vid){mpAddToQueue(vid,url);}
+  alert('Nota: por limitações do YouTube, apenas o primeiro vídeo da playlist foi adicionado. Adicione os links individualmente para uma fila completa.');
+};
+
+function mpAddToQueue(vid, label){
+  mpQueue.push({vid, title: label.length>40?label.slice(0,40)+'…':label});
+  if(mpMode==='shuf') mpPlayOrder=[...Array(mpQueue.length).keys()].sort(()=>Math.random()-.5);
+  mpRenderQueue();
+  if(mpQueue.length===1){
+    mpQueueIdx=0;
+    _mpPlayIdx(0);
+  }
+}
+
+function mpRenderQueue(){
+  const list=document.getElementById('mp-queue-list');
+  const count=document.getElementById('mp-queue-count');
+  if(!list||!count)return;
+  count.textContent=mpQueue.length;
+  list.innerHTML='';
+  mpQueue.forEach((item,i)=>{
+    const row=document.createElement('div');
+    row.className='mp-queue-item'+(i===mpQueueIdx?' active':'');
+    row.innerHTML=`<span class="mp-queue-item-idx">${i+1}</span><span class="mp-queue-item-title" title="${item.title}">${item.title}</span><button class="mp-queue-item-del" onclick="mpRemoveQueue(${i})">✕</button>`;
+    row.onclick=(e)=>{if(e.target.tagName==='BUTTON')return;mpQueueIdx=i;_mpPlayIdx(i);};
+    list.appendChild(row);
+  });
+}
+
+window.mpRemoveQueue=(i)=>{
+  mpQueue.splice(i,1);
+  if(mpQueueIdx>=mpQueue.length)mpQueueIdx=Math.max(0,mpQueue.length-1);
+  mpRenderQueue();
+};
+
+window.mpClearQueue=()=>{
+  mpQueue=[];mpQueueIdx=0;mpPlayOrder=[];
+  mpRenderQueue();
+  try{if(mpPlayer)mpPlayer.stopVideo();}catch(e){}
+  document.getElementById('mp-title').textContent='Sem música';
+  document.getElementById('mp-artist').textContent='Cole um link do YouTube abaixo';
+};
+
+function _mpPlayIdx(idx){
+  if(!mpQueue.length)return;
+  mpQueueIdx=idx;
+  const item=mpQueue[idx];
+  mpRenderQueue();
+  // Sync to Firebase
   if(DB&&code){
     dbGet('tables/'+code).then(st=>{
-      if(st){st.ytVid=vid;st.ytTs=Date.now();dbSet('tables/'+code,st);}
+      if(st){st.ytVid=item.vid;st.ytTs=Date.now();dbSet('tables/'+code,st);}
     });
   }
-  _mpLoadVid(vid);
-};
+  _mpLoadVid(item.vid);
+}
 
 function _mpLoadVid(vid){
   let container=document.getElementById('yt-hidden');
@@ -875,7 +1136,8 @@ function _mpLoadVid(vid){
         onReady:(e)=>{e.target.setVolume(vol);e.target.playVideo();mpPlaying=true;document.getElementById('mp-play-btn').textContent='⏸';mpStartProg();},
         onStateChange:(e)=>{
           if(e.data===YT.PlayerState.PLAYING){mpPlaying=true;document.getElementById('mp-play-btn').textContent='⏸';mpStartProg();}
-          else if(e.data===YT.PlayerState.PAUSED||e.data===YT.PlayerState.ENDED){mpPlaying=false;document.getElementById('mp-play-btn').textContent='▶';}
+          else if(e.data===YT.PlayerState.PAUSED){mpPlaying=false;document.getElementById('mp-play-btn').textContent='▶';}
+          else if(e.data===YT.PlayerState.ENDED){mpPlaying=false;document.getElementById('mp-play-btn').textContent='▶';mpNext();}
         },
         onError:()=>{document.getElementById('mp-title').textContent='Erro ao carregar';},
       }
@@ -940,9 +1202,8 @@ async function dbRemove(p){await remove(ref(DB,p));}
 
 // ── Global helpers ──────────────────────────────────────────────────────────
 window.swTab=(t)=>{
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',i===0?t==='c':t==='j'));
-  document.getElementById('tc-c').classList.toggle('on',t==='c');
-  document.getElementById('tc-j').classList.toggle('on',t==='j');
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['c','j','s'][i]===t));
+  ['c','j','s'].forEach(id=>{const el=document.getElementById('tc-'+id);if(el)el.classList.toggle('on',id===t);});
 };
 window.copyCode=()=>{
   const c=document.getElementById('w-code').textContent;
@@ -950,11 +1211,35 @@ window.copyCode=()=>{
 };
 
 // ── Poker Engine ────────────────────────────────────────────────────────────
-const RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
-const SUITS=['♠','♥','♦','♣'];
-const HNAMES=['High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
+// ── 52-card deck: 4 naipes × 13 ranks = 52 cartas exatas ──
+const RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A']; // 13 ranks
+const SUITS=['♠','♥','♦','♣']; // 4 suits
+const HNAMES=['High Card','Um Par','Dois Pares','Trinca','Sequência','Flush','Full House','Quadra','Straight Flush','Royal Flush'];
 const HDESCS=['Nenhuma combinação','Um par de cartas iguais','Dois pares','Três cartas iguais','Sequência','Cinco cartas do mesmo naipe','Trio + Par','Quatro cartas iguais','Sequência do mesmo naipe','Sequência real do mesmo naipe'];
-function newDeck(){const d=[];for(const s of SUITS)for(const r of RANKS)d.push({r,s});return d;}
+function newDeck(){
+  const d=[];
+  for(const s of SUITS) for(const r of RANKS) d.push({r,s});
+  if(d.length!==52) console.error('DECK ERROR: esperado 52 cartas, gerou '+d.length);
+  return d; // sempre 52
+}
+function validateDeck(deck){
+  // Verifica se o deck tem exatamente 52 cartas únicas
+  const seen=new Set();let ok=true;
+  for(const c of deck){
+    const k=c.r+c.s;
+    if(seen.has(k)){console.error('Carta duplicada:',k);ok=false;}
+    seen.add(k);
+  }
+  if(deck.length!==52){console.error('Deck inválido: '+deck.length+' cartas');ok=false;}
+  return ok;
+}
+function usedCards(state){
+  // Retorna set de todas as cartas já distribuídas
+  const used=new Set();
+  for(const p of state.players) if(p.holeCards) for(const c of p.holeCards) used.add(c.r+c.s);
+  for(const c of (state.community||[])) used.add(c.r+c.s);
+  return used;
+}
 function shuffle(d){d=[...d];for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
 function ri(r){return RANKS.indexOf(r);}
 function handRank(cards){
@@ -1014,9 +1299,11 @@ window.createTable=async()=>{
   const rebuy=parseInt(document.getElementById('c-rebuy').value)||1000;
   myId=genId();myNick=nick;code=genCode();isHost=true;
   connecting('Criando mesa…');
-  const state={code,name,config:{sb,bb,startChips:chips,maxPlayers:maxP,rebuyChips:rebuy},
+  const livesRaw=parseInt(document.getElementById('c-lives')?.value);
+  const lives=(isNaN(livesRaw)||livesRaw===0)?999:livesRaw; // 0 = modo clássico infinito
+  const state={code,name,config:{sb,bb,startChips:chips,maxPlayers:maxP,rebuyChips:rebuy,startLives:lives},
     phase:'waiting',
-    players:[{id:myId,nick,chips,holeCards:[],folded:false,bet:0,allIn:false,isHost:true,active:true}],
+    players:[{id:myId,nick,chips,lives,holeCards:[],folded:false,bet:0,allIn:false,isHost:true,active:true,allinCooldown:0}],
     deck:[],community:[],pot:0,currentBet:0,activePlayerIdx:-1,dealerIdx:0,
     log:[nick+' criou a mesa.'],handNum:0,actedThisRound:[],ytVid:null,ytTs:0};
   await dbSet('tables/'+code,state);
@@ -1035,7 +1322,8 @@ window.joinTable=async()=>{
   if(state.players.length>=state.config.maxPlayers){alert('Mesa cheia!');return;}
   myId=genId();myNick=nick;code=c;isHost=false;
   const mid=state.phase!=='waiting';
-  state.players.push({id:myId,nick,chips:state.config.startChips,holeCards:[],folded:true,bet:0,allIn:false,active:!mid,sittingOut:mid});
+  const jlives=state.config.startLives||3;
+  state.players.push({id:myId,nick,chips:state.config.startChips,lives:jlives,holeCards:[],folded:true,bet:0,allIn:false,active:!mid,sittingOut:mid,allinCooldown:0});
   state.log.push(nick+(mid?' entrou (próxima mão)':' entrou na mesa.'));
   connecting('Entrando…');
   await dbSet('tables/'+code,state);
@@ -1099,7 +1387,17 @@ function onStateChange(state){
   }
   if(me&&me.chips<=0&&!me.allIn&&state.phase==='waiting_next'){
     const rb=state.config.rebuyChips||1000;
+    const livesLeft=me.lives!==undefined?me.lives:(state.config.startLives||3);
     document.getElementById('rejoin-amt').textContent=rb.toLocaleString()+' fichas';
+    // Update lives display in modal
+    const livesEl=document.getElementById('rejoin-lives');
+    if(livesEl){
+      livesEl.innerHTML=livesLeft>0
+        ?'❤️'.repeat(livesLeft)+'🖤'.repeat(Math.max(0,(state.config.startLives||3)-livesLeft))
+        :'💀 Sem vidas restantes!';
+    }
+    const rebuyBtn=document.getElementById('rejoin-rebuy-btn');
+    if(rebuyBtn) rebuyBtn.disabled=(livesLeft<=0);
     document.getElementById('rejoin-ov').style.display='flex';
   }
 }
@@ -1115,18 +1413,55 @@ window.hostStartGame=async()=>{
 };
 
 function dealNewHand(state){
-  state.deck=shuffle(newDeck());
+  // Gera baralho com 52 cartas, valida e embaralha
+  const freshDeck=shuffle(newDeck());
+  validateDeck(freshDeck);
+  state.deck=freshDeck;
   state.community=[];state.pot=0;state.currentBet=0;state.actedThisRound=[];
+  state.allInRunout=false; // flag: runout automático ativado
   state.handNum=(state.handNum||0)+1;
-  for(const p of state.players){p.holeCards=[];p.folded=(p.chips<=0);p.bet=0;p.allIn=false;p.revealed=false;}
-  const inHand=state.players.filter(p=>p.chips>0&&!p.sittingOut);
+
+  // Decrementa cooldown de all-in e inicializa vidas se necessário
+  for(const p of state.players){
+    if(p.lives===undefined||p.lives===null) p.lives=state.config.startLives||3;
+    if(p.allinCooldown===undefined) p.allinCooldown=0;
+    p.holeCards=[];p.folded=(p.chips<=0&&p.lives<=0);p.bet=0;p.allIn=false;p.revealed=false;
+  }
+
+  // Players que podem jogar: têm fichas OU têm vidas (rebuy automático com vidas)
+  for(const p of state.players){
+    if(p.chips<=0 && (p.lives>0||p.lives===999) && !p.sittingOut){
+      // Rebuy automático via vida
+      const isInf=(p.lives===999||(state.config.startLives||3)>=999);
+      if(!isInf) p.lives--;
+      p.chips=state.config.rebuyChips||state.config.startChips||1000;
+      p.folded=false;
+      const lMsg=isInf?'(modo clássico)':`Restam ${p.lives} vida(s).`;
+      state.log.push(`💔 ${p.nick} recebeu ${p.chips} fichas. ${lMsg}`);
+    }
+  }
+
+  const inHand=state.players.filter(p=>p.chips>0&&!p.sittingOut&&!p.folded);
   if(inHand.length<2){state.phase='waiting';return;}
   const n=state.players.length;
-  let nd=state.dealerIdx;
+  let nd=state.dealerIdx||0;
   for(let i=0;i<n;i++){nd=(nd+1)%n;if(state.players[nd].chips>0&&!state.players[nd].sittingOut)break;}
   state.dealerIdx=nd;
-  for(const p of state.players)if(p.chips>0&&!p.sittingOut)p.holeCards=[state.deck.pop(),state.deck.pop()];
-  const actives=state.players.map((p,i)=>({p,i})).filter(({p})=>p.chips>0&&!p.sittingOut);
+
+  // Distribui exatamente 2 cartas para cada jogador ativo — sem repetição
+  for(const p of state.players){
+    if(p.chips>0&&!p.sittingOut&&!p.folded){
+      p.holeCards=[state.deck.pop(),state.deck.pop()];
+    }
+  }
+
+  // Verifica integridade: sem cartas repetidas
+  const used=usedCards(state);
+  if(used.size !== state.players.filter(p=>p.holeCards&&p.holeCards.length===2).length*2){
+    console.error('INTEGRIDADE: cartas repetidas detectadas!');
+  }
+
+  const actives=state.players.map((p,i)=>({p,i})).filter(({p})=>p.chips>0&&!p.sittingOut&&!p.folded);
   const dp=actives.findIndex(({i})=>i===state.dealerIdx);
   const sbi=(dp+1)%actives.length,bbi=(dp+2)%actives.length;
   postBlind(state,actives[sbi].i,state.config.sb);
@@ -1152,11 +1487,27 @@ window.doAction=async(action,amount)=>{
   if(!me||state.activePlayerIdx<0)return;
   if(state.players[state.activePlayerIdx].id!==myId)return;
   const call=state.currentBet-me.bet;
+
   if(action==='fold'){me.folded=true;state.log.push(me.nick+' foldou.');sndFold();}
   else if(action==='check'){state.log.push(me.nick+' deu check.');sndCheck();}
-  else if(action==='call'){const a=Math.min(call,me.chips);me.chips-=a;me.bet+=a;state.pot+=a;if(me.chips===0)me.allIn=true;state.log.push(me.nick+' pagou '+a+'.');sndChip();}
-  else if(action==='raise'){const tot=parseInt(amount),ex=tot-me.bet,a=Math.min(ex,me.chips);me.chips-=a;me.bet+=a;state.pot+=a;if(me.chips===0)me.allIn=true;state.currentBet=me.bet;state.actedThisRound=[myId];state.log.push(me.nick+' raised para '+me.bet+'.');sndChip();}
-  else if(action==='allin'){state.pot+=me.chips;me.bet+=me.chips;me.chips=0;me.allIn=true;if(me.bet>state.currentBet){state.currentBet=me.bet;state.actedThisRound=[myId];}state.log.push(me.nick+' foi ALL IN com '+me.bet+'!');sndAllin();}
+  else if(action==='call'){
+    const a=Math.min(call,me.chips);me.chips-=a;me.bet+=a;state.pot+=a;
+    if(me.chips===0){me.allIn=true;}
+    state.log.push(me.nick+' pagou '+a+'.');sndChip();
+  }
+  else if(action==='raise'){
+    const tot=parseInt(amount),ex=tot-me.bet,a=Math.min(ex,me.chips);
+    me.chips-=a;me.bet+=a;state.pot+=a;
+    if(me.chips===0){me.allIn=true;}
+    me.currentBet=me.bet;state.currentBet=me.bet;state.actedThisRound=[myId];
+    state.log.push(me.nick+' raised para '+me.bet+'.');sndChip();
+  }
+  else if(action==='allin'){
+    state.pot+=me.chips;me.bet+=me.chips;me.chips=0;me.allIn=true;
+    if(me.bet>state.currentBet){state.currentBet=me.bet;state.actedThisRound=[myId];}
+    state.log.push(me.nick+' foi ALL IN com $'+me.bet+'! 🔥');
+    sndAllin();
+  }
   if(!state.actedThisRound.includes(myId))state.actedThisRound.push(myId);
   advanceGame(state);
   await dbSet('tables/'+code,state);
@@ -1165,33 +1516,121 @@ window.doAction=async(action,amount)=>{
 function advanceGame(state){
   if(!state.actedThisRound)state.actedThisRound=[];
   if(!state.community)state.community=[];if(!state.deck)state.deck=[];
+
   const notFolded=state.players.filter(p=>!p.folded&&p.holeCards&&p.holeCards.length===2);
-  if(notFolded.length===1){const w=notFolded[0];w.chips+=state.pot;state.winnerName=w.nick;state.winnerAmt=state.pot;state.winnerHand='Ganhou (todos desistiram)';state.winnerComm=state.community;state.log.push(w.nick+' ganhou '+state.pot+'!');state.phase='waiting_next';return;}
+
+  // Só 1 jogador restante: ganhou por desistência
+  if(notFolded.length===1){
+    const w=notFolded[0];w.chips+=state.pot;
+    state.winnerName=w.nick;state.winnerAmt=state.pot;
+    state.winnerHand='Ganhou (todos desistiram)';state.winnerComm=[...state.community];
+    state.log.push(w.nick+' ganhou $'+state.pot+'!');
+    state.phase='waiting_next';return;
+  }
+
   const canAct=state.players.filter(p=>!p.folded&&!p.allIn&&p.holeCards&&p.holeCards.length===2);
-  if(!canAct.length){nextStreet(state);return;}
+
+  // ── ALL-IN RUNOUT: todos apostaram e pelo menos 1 está all-in ──
+  // Se não há ninguém que possa agir (todos all-in ou foldados), corre o board completo
+  if(!canAct.length){
+    // Revela todas as cartas dos jogadores ativos (modo all-in showdown)
+    for(const p of notFolded) p.revealed=true;
+    state.allInRunout=true;
+    runBoardToEnd(state);
+    return;
+  }
+
+  // Verifica se os que podem agir já agiram e apostas niveladas
   const allDone=canAct.every(p=>state.actedThisRound.includes(p.id)&&p.bet===state.currentBet);
   if(allDone){nextStreet(state);return;}
+
   let next=(state.activePlayerIdx+1)%state.players.length,tries=0;
-  while(tries<state.players.length){const np=state.players[next];if(!np.folded&&!np.allIn&&np.holeCards&&np.holeCards.length===2)break;next=(next+1)%state.players.length;tries++;}
+  while(tries<state.players.length){
+    const np=state.players[next];
+    if(!np.folded&&!np.allIn&&np.holeCards&&np.holeCards.length===2)break;
+    next=(next+1)%state.players.length;tries++;
+  }
   if(tries>=state.players.length)nextStreet(state);else state.activePlayerIdx=next;
+}
+
+// Corre o board completo quando há all-in (revela todas as cartas do flop/turn/river)
+function runBoardToEnd(state){
+  if(!state.community)state.community=[];if(!state.deck)state.deck=[];
+  // Completa a board até o river
+  while(state.community.length<5&&state.deck.length>0){
+    state.community.push(state.deck.pop());
+  }
+  // Verifica integridade: nenhuma carta da community pode estar nas mãos
+  const holeSet=new Set();
+  for(const p of state.players) if(p.holeCards) for(const c of p.holeCards) holeSet.add(c.r+c.s);
+  const dups=state.community.filter(c=>holeSet.has(c.r+c.s));
+  if(dups.length) console.error('RUNOUT: cartas duplicadas na community!',dups);
+
+  state.log.push('🃏 All-in! Board completo: '+state.community.map(c=>c.r+c.s).join(' '));
+  // Determina vencedor
+  const el=state.players.filter(p=>!p.folded&&p.holeCards&&p.holeCards.length===2);
+  const res=determineWinner(el,state.community);
+  if(res){
+    res.player.chips+=state.pot;
+    state.winnerName=res.player.nick;state.winnerAmt=state.pot;
+    state.winnerHand=res.hand.name;state.winnerComm=[...state.community];
+    state.log.push(res.player.nick+' ganhou $'+state.pot+' com '+res.hand.name+'! 🏆');
+  }
+  state.phase='waiting_next';
 }
 
 function nextStreet(state){
   if(!state.community)state.community=[];if(!state.deck)state.deck=[];
-  for(const p of state.players)p.bet=0;state.currentBet=0;state.actedThisRound=[];
-  if(state.phase==='preflop'){state.community.push(state.deck.pop(),state.deck.pop(),state.deck.pop());state.phase='flop';state.log.push('Flop: '+state.community.map(c=>c.r+c.s).join(' '));}
-  else if(state.phase==='flop'){state.community.push(state.deck.pop());state.phase='turn';state.log.push('Turn: '+state.community[3].r+state.community[3].s);}
-  else if(state.phase==='turn'){state.community.push(state.deck.pop());state.phase='river';state.log.push('River: '+state.community[4].r+state.community[4].s);}
-  else if(state.phase==='river'){
+  for(const p of state.players){p.bet=0;}
+  state.currentBet=0;state.actedThisRound=[];
+
+  // Avança a rua
+  if(state.phase==='preflop'){
+    state.community.push(state.deck.pop(),state.deck.pop(),state.deck.pop());
+    state.phase='flop';
+    state.log.push('Flop: '+state.community.map(c=>c.r+c.s).join(' '));
+  } else if(state.phase==='flop'){
+    state.community.push(state.deck.pop());
+    state.phase='turn';
+    state.log.push('Turn: '+state.community[3].r+state.community[3].s);
+  } else if(state.phase==='turn'){
+    state.community.push(state.deck.pop());
+    state.phase='river';
+    state.log.push('River: '+state.community[4].r+state.community[4].s);
+  } else if(state.phase==='river'){
     const el=state.players.filter(p=>!p.folded&&p.holeCards&&p.holeCards.length===2);
     const res=determineWinner(el,state.community);
-    if(res){res.player.chips+=state.pot;state.winnerName=res.player.nick;state.winnerAmt=state.pot;state.winnerHand=res.hand.name;state.winnerComm=[...state.community];state.log.push(res.player.nick+' ganhou '+state.pot+' com '+res.hand.name+'!');}
+    if(res){
+      res.player.chips+=state.pot;
+      state.winnerName=res.player.nick;state.winnerAmt=state.pot;
+      state.winnerHand=res.hand.name;state.winnerComm=[...state.community];
+      state.log.push(res.player.nick+' ganhou $'+state.pot+' com '+res.hand.name+'! 🏆');
+    }
     state.phase='waiting_next';return;
   }
+
+  // Verifica integridade de cartas após cada rua
+  const used=usedCards(state);
+  const playerCards=state.players.filter(p=>p.holeCards&&p.holeCards.length===2).length*2;
+  if(used.size !== state.community.length+playerCards){
+    console.error('INTEGRIDADE pós-rua: possível duplicata! used='+used.size);
+  }
+
   const canAct=state.players.filter(p=>!p.folded&&!p.allIn&&p.holeCards&&p.holeCards.length===2);
-  if(!canAct.length){nextStreet(state);return;}
+
+  // Se ninguém pode agir (todos all-in), corre o board até o fim com runout
+  if(!canAct.length){
+    const notFolded=state.players.filter(p=>!p.folded&&p.holeCards&&p.holeCards.length===2);
+    for(const p of notFolded) p.revealed=true;
+    state.allInRunout=true;
+    runBoardToEnd(state);return;
+  }
+
   const n=state.players.length;let next=(state.dealerIdx+1)%n,tries=0;
-  while(tries<n){if(!state.players[next].folded&&!state.players[next].allIn&&state.players[next].holeCards?.length===2)break;next=(next+1)%n;tries++;}
+  while(tries<n){
+    if(!state.players[next].folded&&!state.players[next].allIn&&state.players[next].holeCards?.length===2)break;
+    next=(next+1)%n;tries++;
+  }
   state.activePlayerIdx=next;
 }
 
@@ -1199,7 +1638,18 @@ window.doRebuy=async()=>{
   const state=await dbGet('tables/'+code);if(!state)return;
   const me=state.players.find(p=>p.id===myId);
   const rb=state.config.rebuyChips||1000;
-  if(me){me.chips=rb;me.folded=true;me.sittingOut=false;state.log.push(me.nick+' voltou com '+rb+' fichas.');}
+  if(me){
+    const isInfinite=(me.lives===999||(state.config.startLives||3)>=999);
+    if(!isInfinite&&me.lives<=0){
+      // Sem vidas: sai do jogo
+      alert('💀 Você ficou sem vidas! Fim de jogo.');
+      leaveTable();return;
+    }
+    if(!isInfinite) me.lives--;
+    me.chips=rb;me.folded=true;me.sittingOut=false;
+    const livesMsg=isInfinite?'(modo clássico)':`Restam ${me.lives} vida(s).`;
+    state.log.push(`💔 ${me.nick} voltou com ${rb} fichas. ${livesMsg}`);
+  }
   await dbSet('tables/'+code,state);
   document.getElementById('rejoin-ov').style.display='none';
 };
@@ -1245,9 +1695,21 @@ try{const s=localStorage.getItem('pn_skin');applySkin(s!==null&&s!==undefined?s:
 // ── Render ───────────────────────────────────────────────────────────────────
 function renderTable(state){
   const me=state.players.find(p=>p.id===myId);if(!me)return;
+  window._lastPhase=state.phase;
   document.getElementById('g-code').textContent='# '+state.code;
   document.getElementById('g-name').textContent=state.name;
   document.getElementById('g-chips').textContent=me.chips.toLocaleString();
+  // Lives in top bar
+  const tbarLives=document.getElementById('tbar-lives');
+  if(tbarLives){
+    const maxL=state.config?.startLives||3;
+    const curL=me.lives!==undefined?me.lives:maxL;
+    if(maxL<999){
+      tbarLives.innerHTML='❤️'.repeat(Math.max(0,curL))+'🖤'.repeat(Math.max(0,maxL-curL));
+    } else {
+      tbarLives.innerHTML=''; // modo clássico, sem vidas
+    }
+  }
   document.getElementById('pot-lbl').textContent='Pote: $'+state.pot.toLocaleString();
   const phases={preflop:'Pré-Flop',flop:'Flop',turn:'Turn',river:'River',waiting_next:'Fim da Mão',waiting:'Aguardando'};
   document.getElementById('phase-lbl').textContent=phases[state.phase]||'';
@@ -1261,6 +1723,13 @@ function renderTable(state){
   renderMyCards(me,state);
   requestAnimationFrame(()=>renderSeats(state));
   renderActions(state,me);
+  // All-in runout badge
+  let rb=document.getElementById('allin-runout-badge');
+  if(state.allInRunout&&state.phase!=='waiting_next'){
+    if(!rb){rb=document.createElement('div');rb.id='allin-runout-badge';rb.className='allin-runout-badge';rb.textContent='🃏 ALL-IN RUNOUT';document.getElementById('the-felt').appendChild(rb);}
+  } else {
+    if(rb)rb.remove();
+  }
 
   // Sync YouTube music from Firebase state (all players hear same track)
   if(state.ytVid&&state.ytVid!==window._lastYtVid){
@@ -1380,16 +1849,36 @@ function renderSeats(state){
     const betHtml=p.bet>0?`<div class="sbet-bubble">$${p.bet.toLocaleString()}</div>`:'';
     const turnHtml=isAct?'<div class="turn-arrow"></div>':'';
 
+    // Vidas: corações ❤️ e vazios (oculto em modo clássico ∞)
+    const maxLives=state.config?.startLives||3;
+    const curLives=p.lives!==undefined?p.lives:maxLives;
+    const livesHtml=maxLives<999
+      ?`<div class="seat-lives">${'❤️'.repeat(Math.max(0,Math.min(curLives,maxLives)))}${'🖤'.repeat(Math.max(0,maxLives-curLives))}</div>`
+      :'';
+    const cdBadge='';
+
     html+=`<div class="seat" style="left:${pos.x}px;top:${pos.y}px">
       ${turnHtml}
       <div class="${avc}">${p.nick.charAt(0).toUpperCase()}</div>
       <div class="seat-info" style="display:flex;align-items:center;justify-content:center">
-        <div><div class="sname">${isMe?'✦ ':''} ${p.nick}</div><div class="schips">$${p.chips.toLocaleString()}</div></div>
+        <div>
+          <div class="sname">${isMe?'✦ ':''} ${p.nick}</div>
+          <div class="schips">$${p.chips.toLocaleString()}</div>
+        </div>
       </div>
-      ${betHtml}${cardsHtml}${stHtml}
+      ${livesHtml}${cdBadge}${betHtml}${cardsHtml}${stHtml}
     </div>`;
   });
   wrap.innerHTML=html;
+  // Apply profile photo to my avatar
+  if(myId&&myProfilePhoto){
+    const mySlot=state.players.findIndex(p=>p.id===myId);
+    if(mySlot>=0){
+      const myRel=(mySlot-state.players.findIndex(p=>p.id===myId)+state.players.length)%state.players.length;
+      const allAvatars=wrap.querySelectorAll('.av.me');
+      allAvatars.forEach(av=>applyMyPhoto(av));
+    }
+  }
 }
 
 function renderMyCards(me,state){
@@ -1434,6 +1923,231 @@ window.openRaise=(mn,mx)=>{
 };
 window.onRaise=(v)=>{raiseVal=parseInt(v);document.getElementById('rlbl').textContent='$'+v;};
 window.confirmRaise=()=>{doAction('raise',raiseVal);raiseOpen=false;document.getElementById('raise-row').style.display='none';};
+
+// ── Profile Photo ────────────────────────────────────────────────────────────
+let myProfilePhoto = null;
+
+window.triggerPhotoUpload=(prefix)=>{
+  document.getElementById(prefix+'-photo-input').click();
+};
+
+window.handlePhotoUpload=(input,prefix)=>{
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    myProfilePhoto=e.target.result;
+    try{localStorage.setItem('pn_profile_photo',myProfilePhoto);}catch(ex){}
+    const prev=document.getElementById(prefix+'-photo-prev');
+    if(prev){prev.innerHTML=`<img src="${myProfilePhoto}" alt="foto">`;}
+    // Sync other prefix preview too
+    ['c','j'].forEach(p=>{
+      const el=document.getElementById(p+'-photo-prev');
+      if(el&&p!==prefix)el.innerHTML=`<img src="${myProfilePhoto}" alt="foto">`;
+    });
+  };
+  reader.readAsDataURL(file);
+};
+
+// Load saved photo
+try{
+  const saved=localStorage.getItem('pn_profile_photo');
+  if(saved){
+    myProfilePhoto=saved;
+    ['c','j'].forEach(prefix=>{
+      const el=document.getElementById(prefix+'-photo-prev');
+      if(el)el.innerHTML=`<img src="${saved}" alt="foto">`;
+    });
+  }
+}catch(e){}
+
+// Apply photo to my seat avatar
+function applyMyPhoto(avatarEl){
+  if(!myProfilePhoto||!avatarEl)return;
+  avatarEl.classList.add('has-photo');
+  if(!avatarEl.querySelector('img')){
+    const img=document.createElement('img');img.src=myProfilePhoto;img.alt='foto';
+    avatarEl.innerHTML='';avatarEl.appendChild(img);
+  }
+}
+
+// ── Background Picker ─────────────────────────────────────────────────────────
+const BG_STYLES = {
+  '': 'background:#0d1117',
+  'felt-dark': 'background:linear-gradient(135deg,#0a1f12,#0d1117,#0a1218)',
+  'space': 'background:radial-gradient(ellipse at 30% 30%,#1a1a3e,#050510) fixed',
+  'casino': 'background:repeating-linear-gradient(45deg,#1a0808 0,#1a0808 5px,#200c0c 5px,#200c0c 10px)',
+  'marble': 'background:linear-gradient(160deg,#18181a 0%,#2a2520 40%,#1a1a1a 70%,#23201c 100%)',
+};
+let currentBg='';
+
+window.setBg=(key)=>{
+  currentBg=key;
+  const felt=document.querySelector('.felt-wrap');
+  if(key==='__custom__'){
+    // handled by upload
+  } else {
+    document.getElementById('game-screen').style.background='';
+    const fw=document.querySelector('.felt-wrap');
+    if(fw){fw.removeAttribute('style');fw.style.cssText=BG_STYLES[key]||'';}
+    // Also set body bg for setup etc.
+    document.body.style.backgroundImage='';
+  }
+  document.querySelectorAll('.bg-swatch').forEach(s=>s.classList.toggle('active',s.dataset.bg===key));
+  try{localStorage.setItem('pn_bg',key);}catch(e){}
+  document.getElementById('theme-dropdown').classList.remove('open');
+};
+
+window.triggerBgUpload=()=>{
+  document.getElementById('bg-file-input').click();
+};
+
+window.handleBgUpload=(input)=>{
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    const dataUrl=e.target.result;
+    const fw=document.querySelector('.felt-wrap');
+    if(fw){
+      fw.style.backgroundImage=`url("${dataUrl}")`;
+      fw.style.backgroundSize='cover';
+      fw.style.backgroundPosition='center';
+    }
+    currentBg='__custom__';
+    document.querySelectorAll('.bg-swatch').forEach(s=>s.classList.remove('active'));
+    try{localStorage.setItem('pn_bg','__custom__');localStorage.setItem('pn_bg_img',dataUrl);}catch(e){}
+    document.getElementById('theme-dropdown').classList.remove('open');
+  };
+  reader.readAsDataURL(file);
+};
+
+// Restore saved bg
+try{
+  const savedBg=localStorage.getItem('pn_bg');
+  if(savedBg==='__custom__'){
+    const img=localStorage.getItem('pn_bg_img');
+    if(img){
+      window.addEventListener('DOMContentLoaded',()=>{
+        const fw=document.querySelector('.felt-wrap');
+        if(fw){fw.style.backgroundImage=`url("${img}")`;fw.style.backgroundSize='cover';fw.style.backgroundPosition='center';}
+        currentBg='__custom__';
+      });
+    }
+  } else if(savedBg&&BG_STYLES[savedBg]!==undefined){
+    window.addEventListener('DOMContentLoaded',()=>setBg(savedBg));
+  }
+}catch(e){}
+
+// ── Spectator Mode ────────────────────────────────────────────────────────────
+let isSpectator=false;
+
+window.spectateTable=async()=>{
+  const c=document.getElementById('s-code').value.trim().toUpperCase();
+  if(c.length<3){alert('Código inválido!');return;}
+  connecting('Buscando mesa…');
+  const state=await dbGet('tables/'+c);
+  doneConn();
+  if(!state){alert('Mesa não encontrada!');return;}
+  isSpectator=true;
+  myId=null;myNick='Espectador';code=c;isHost=false;
+  show('game-screen');
+  showGameUI(true);
+  document.getElementById('spectator-banner').classList.add('show');
+  // Hide action bar for spectator
+  document.querySelector('.act-area').style.display='none';
+  const hp=document.querySelector('.hand-panel');if(hp)hp.style.display='none';
+  dbListen('tables/'+c,onStateChangeSpectator);
+};
+
+function onStateChangeSpectator(state){
+  if(!state)return;
+  // Render table but without "me"
+  document.getElementById('g-code').textContent='# '+state.code;
+  document.getElementById('g-name').textContent=state.name;
+  document.getElementById('g-chips').textContent='👁';
+  document.getElementById('pot-lbl').textContent='Pote: $'+state.pot.toLocaleString();
+  const phases={preflop:'Pré-Flop',flop:'Flop',turn:'Turn',river:'River',waiting_next:'Fim da Mão',waiting:'Aguardando'};
+  document.getElementById('phase-lbl').textContent=phases[state.phase]||'';
+  const log=state.log||[];
+  const sub=document.getElementById('g-subtitle');if(sub)sub.textContent=log[log.length-1]||'';
+  renderComm(state.community);
+  requestAnimationFrame(()=>renderSeatsSpectator(state));
+  // Music sync
+  if(state.ytVid&&state.ytVid!==window._lastYtVid){
+    window._lastYtVid=state.ytVid;
+    _mpLoadVid(state.ytVid);
+  }
+  const banner=document.getElementById('winner-banner');
+  const isEnd=state.phase==='waiting_next';
+  if(state.winnerName&&isEnd){
+    document.getElementById('wb-name').textContent=state.winnerName;
+    document.getElementById('wb-amt').textContent='+$'+state.winnerAmt.toLocaleString();
+    document.getElementById('wb-hand').textContent=state.winnerHand||'';
+    banner.classList.add('show');
+  } else if(!isEnd){
+    banner.classList.remove('show');
+  }
+}
+
+function renderSeatsSpectator(state){
+  const n=state.players.length;
+  const wrap=document.getElementById('seats-wrap');
+  const rail=document.querySelector('.table-rail');
+  if(!rail)return;
+  const W=rail.offsetWidth,H=rail.offsetHeight;
+  const positions=seatPos(n,W,H);
+  const isEnd=state.phase==='waiting_next';
+  let html='';
+  state.players.forEach((p,i)=>{
+    const pos=positions[i];
+    const isAct=state.activePlayerIdx===i&&!isEnd&&state.phase!=='waiting';
+    let avc='av';
+    if(isAct)avc+=' myturn';
+    if(p.folded)avc+=' folded';
+    if(p.allIn)avc+=' allin';
+    let cardsHtml='';
+    if(p.holeCards?.length===2&&state.phase!=='waiting'){
+      if(p.revealed||isEnd){
+        cardsHtml='<div class="scards seat-revealed">'+p.holeCards.map(c=>mkCard(c,true).outerHTML).join('')+'</div>';
+      } else {
+        cardsHtml='<div class="scards">'+mkDown(true).outerHTML+mkDown(true).outerHTML+'</div>';
+      }
+    }
+    const betHtml=p.bet>0?`<div class="sbet-bubble">$${p.bet.toLocaleString()}</div>`:'';
+    const turnHtml=isAct?'<div class="turn-arrow"></div>':'';
+    let stHtml='';
+    if(p.folded)stHtml='<div class="sstatus fold">FOLD</div>';
+    else if(p.allIn)stHtml='<div class="sstatus ai">ALL IN</div>';
+    html+=`<div class="seat" style="left:${pos.x}px;top:${pos.y}px">
+      ${turnHtml}
+      <div class="${avc}">${p.nick.charAt(0).toUpperCase()}</div>
+      <div class="seat-info"><div><div class="sname">${p.nick}</div><div class="schips">$${p.chips.toLocaleString()}</div></div></div>
+      ${betHtml}${cardsHtml}${stHtml}
+    </div>`;
+  });
+  wrap.innerHTML=html;
+}
+
+// ── Leave Confirmation ────────────────────────────────────────────────────────
+window.confirmLeaveTable=()=>{
+  if(isSpectator){leaveSpectator();return;}
+  const phase=window._lastPhase||'';
+  const inGame=phase!=='waiting'&&phase!=='waiting_next'&&phase!=='';
+  if(inGame){
+    if(!confirm('Você está em uma mão ativa. Sair agora vai dar fold automaticamente. Confirma?'))return;
+  }
+  leaveTable();
+};
+
+window.leaveSpectator=()=>{
+  if(unsubFn){unsubFn();unsubFn=null;}
+  isSpectator=false;code=null;
+  document.getElementById('spectator-banner').classList.remove('show');
+  document.querySelector('.act-area').style.display='';
+  const hp2=document.querySelector('.hand-panel');if(hp2)hp2.style.display='';
+  showGameUI(false);
+  show('setup-screen');
+  try{if(window.mpPlayer)window.mpPlayer.stopVideo();}catch(e){}
+};
 
 tryAutoInit();
 
