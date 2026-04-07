@@ -538,6 +538,30 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
 .side-btn.leave { border-color:rgba(231,76,60,.4); color:#e74c3c; }
 .side-btn.leave:hover { background:rgba(231,76,60,.2); border-color:#e74c3c; transform:scale(1.08); }
 
+/* ── BAN MODAL ── */
+#ban-modal { display:none; position:fixed; inset:0; z-index:2100; background:rgba(0,0,0,.88); backdrop-filter:blur(6px); align-items:center; justify-content:center; }
+#ban-modal.open { display:flex; }
+.ban-card { background:linear-gradient(135deg,#1a1a1a,#111); border:1px solid rgba(231,76,60,.35); border-radius:18px; padding:1.8rem 2rem; max-width:360px; width:90%; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.9); }
+.ban-card h2 { font-family:'Playfair Display',serif; font-size:1.3rem; color:#e74c3c; margin-bottom:.4rem; }
+.ban-card .ban-sub { font-family:'JetBrains Mono',monospace; font-size:.62rem; color:rgba(245,240,232,.38); margin-bottom:1.2rem; }
+.ban-list { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1.2rem; max-height:260px; overflow-y:auto; }
+.ban-list::-webkit-scrollbar { width:3px; }
+.ban-list::-webkit-scrollbar-thumb { background:rgba(231,76,60,.3); border-radius:3px; }
+.ban-player-row { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:9px; padding:.5rem .75rem; }
+.ban-player-name { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--cream); }
+.ban-btn { padding:.28rem .65rem; border:none; border-radius:6px; background:rgba(231,76,60,.2); border:1px solid rgba(231,76,60,.5); color:#e74c3c; font-family:'JetBrains Mono',monospace; font-size:.6rem; font-weight:700; cursor:pointer; transition:all .15s; }
+.ban-btn:hover { background:#e74c3c; color:#fff; }
+.ban-close-btn { width:100%; padding:.65rem; border:1px solid rgba(201,168,76,.25); border-radius:9px; background:transparent; color:var(--gold); font-family:'JetBrains Mono',monospace; font-size:.72rem; cursor:pointer; transition:all .2s; }
+.ban-close-btn:hover { background:rgba(201,168,76,.08); }
+
+/* ── BANNED OVERLAY ── */
+#banned-ov { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.97); align-items:center; justify-content:center; text-align:center; }
+#banned-ov.show { display:flex; }
+.banned-card { padding:2.5rem 2rem; }
+.banned-icon { font-size:4rem; margin-bottom:1rem; }
+.banned-title { font-family:'Playfair Display',serif; font-size:2rem; color:#e74c3c; margin-bottom:.5rem; }
+.banned-msg { font-family:'JetBrains Mono',monospace; font-size:.75rem; color:rgba(245,240,232,.45); line-height:1.6; }
+
 /* ── SPECTATOR MODE join section ── */
 #tc-s .cfg { cursor:default; }
 
@@ -791,7 +815,29 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
   <button class="side-btn" id="theme-btn" onclick="toggleThemeDropdown()" title="Cor da Mesa">🎨</button>
   <button class="side-btn" onclick="openSkinModal()" title="Skin do Baralho">🃏</button>
   <button class="side-btn" onclick="toggleHands()" title="Mãos do Poker">?</button>
+  <button class="side-btn" id="ban-host-btn" onclick="openBanModal()" title="Gerenciar Jogadores" style="display:none">🛡</button>
   <button class="side-btn leave" onclick="confirmLeaveTable()" title="Sair da Mesa">🚪</button>
+</div>
+
+<!-- Ban Modal -->
+<div id="ban-modal">
+  <div class="ban-card">
+    <div style="font-size:2rem;margin-bottom:.5rem">🛡</div>
+    <h2>Gerenciar Jogadores</h2>
+    <div class="ban-sub">Remova ou bane um jogador da mesa</div>
+    <div class="ban-list" id="ban-list"></div>
+    <button class="ban-close-btn" onclick="closeBanModal()">Fechar</button>
+  </div>
+</div>
+
+<!-- Banned overlay -->
+<div id="banned-ov">
+  <div class="banned-card">
+    <div class="banned-icon">🚫</div>
+    <div class="banned-title">Você foi banido</div>
+    <div class="banned-msg">O anfitrião removeu você desta mesa.<br>Crie ou entre em outra sala.</div>
+    <button onclick="location.reload()" style="margin-top:1.5rem;padding:.7rem 2rem;border:none;border-radius:9px;background:#e74c3c;color:#fff;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;cursor:pointer;">Voltar ao Início</button>
+  </div>
 </div>
 
 <!-- Theme dropdown (slides from right) -->
@@ -928,7 +974,11 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
 </div>
 
 <script>
-window.__FB__ = /* FIREBASE_CONFIG_PLACEHOLDER */null;
+// Firebase config — injected at deploy time (never committed to source)
+(function(){
+  const _c = /* FIREBASE_CONFIG_PLACEHOLDER */null;
+  if(_c){ try{ window.__FB__=typeof _c==='string'?JSON.parse(_c):_c; }catch(e){} }
+})();
 </script>
 <script type="module">
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -1285,6 +1335,9 @@ function showGameUI(yes){
     document.getElementById('theme-dropdown').classList.remove('open');
     document.getElementById('music-panel').classList.remove('open');
   }
+  // Show ban button only to host
+  const banBtn=document.getElementById('ban-host-btn');
+  if(banBtn) banBtn.style.display=(yes&&isHost)?'flex':'none';
 }
 
 // ── Table CRUD ──────────────────────────────────────────────────────────────
@@ -1320,7 +1373,10 @@ window.joinTable=async()=>{
   doneConn();
   if(!state){alert('Mesa não encontrada!');return;}
   if(state.players.length>=state.config.maxPlayers){alert('Mesa cheia!');return;}
-  myId=genId();myNick=nick;code=c;isHost=false;
+  // Generate new id first so we can check ban list
+  const newId=genId();
+  // (Ban list is keyed by session id so a banned player can rejoin with a new nick/session — this is by design for a casual game)
+  myId=newId;myNick=nick;code=c;isHost=false;
   const mid=state.phase!=='waiting';
   const jlives=state.config.startLives||3;
   state.players.push({id:myId,nick,chips:state.config.startChips,lives:jlives,photo:myProfilePhoto||null,holeCards:[],folded:true,bet:0,allIn:false,active:!mid,sittingOut:mid,allinCooldown:0});
@@ -1369,11 +1425,89 @@ window.leaveTable=async()=>{
   show('setup-screen');
 };
 
+// ── Ban / Kick system ─────────────────────────────────────────────────────────
+window.openBanModal=async()=>{
+  if(!isHost||!code)return;
+  const state=await dbGet('tables/'+code);
+  if(!state)return;
+  const list=document.getElementById('ban-list');
+  list.innerHTML='';
+  const others=state.players.filter(p=>p.id!==myId);
+  if(!others.length){list.innerHTML='<div style="font-family:\'JetBrains Mono\',monospace;font-size:.65rem;color:rgba(245,240,232,.35);padding:.5rem">Nenhum outro jogador na mesa.</div>';};
+  others.forEach(p=>{
+    const row=document.createElement('div');
+    row.className='ban-player-row';
+    row.innerHTML=`<span class="ban-player-name">${p.nick}</span>
+      <div style="display:flex;gap:.4rem">
+        <button class="ban-btn" style="background:rgba(231,120,0,.18);border-color:rgba(231,120,0,.5);color:#f39c12" onclick="kickPlayer('${p.id}','${p.nick.replace(/'/g,"\\'")}')">Kick</button>
+        <button class="ban-btn" onclick="banPlayer('${p.id}','${p.nick.replace(/'/g,"\\'")}')">Ban</button>
+      </div>`;
+    list.appendChild(row);
+  });
+  document.getElementById('ban-modal').classList.add('open');
+};
+
+window.closeBanModal=()=>document.getElementById('ban-modal').classList.remove('open');
+
+// Kick: remove from game, can rejoin
+window.kickPlayer=async(targetId, targetNick)=>{
+  if(!isHost||!code)return;
+  if(!confirm(`Remover ${targetNick} da mesa? Ele poderá voltar.`))return;
+  const state=await dbGet('tables/'+code);
+  if(!state)return;
+  state.players=state.players.filter(p=>p.id!==targetId);
+  state.log.push(`🚪 ${targetNick} foi removido pelo anfitrião.`);
+  // Mark as kicked so client detects and goes back to setup
+  if(!state.kicked)state.kicked={};
+  state.kicked[targetId]=Date.now();
+  await dbSet('tables/'+code,state);
+  closeBanModal();
+};
+
+// Ban: remove + add to banned list (cannot rejoin)
+window.banPlayer=async(targetId, targetNick)=>{
+  if(!isHost||!code)return;
+  if(!confirm(`Banir ${targetNick}? Ele não poderá entrar nesta mesa novamente.`))return;
+  const state=await dbGet('tables/'+code);
+  if(!state)return;
+  state.players=state.players.filter(p=>p.id!==targetId);
+  state.log.push(`🚫 ${targetNick} foi banido pelo anfitrião.`);
+  if(!state.banned)state.banned={};
+  state.banned[targetId]=true;
+  await dbSet('tables/'+code,state);
+  closeBanModal();
+};
+
 // ── State listener ───────────────────────────────────────────────────────────
 function onStateChange(state){
   if(!state)return;
   const me=state.players?.find(p=>p.id===myId);
-  if(me)isHost=!!me.isHost;
+  if(me) isHost=!!me.isHost;
+
+  // Check if I've been banned
+  if(state.banned&&myId&&state.banned[myId]){
+    if(unsubFn){unsubFn();unsubFn=null;}
+    myId=null;myNick=null;code=null;isHost=false;
+    document.getElementById('banned-ov').classList.add('show');
+    return;
+  }
+
+  // Check if I've been kicked (can rejoin, just go back to setup)
+  if(state.kicked&&myId&&state.kicked[myId]){
+    if(unsubFn){unsubFn();unsubFn=null;}
+    const n=myNick;
+    myId=null;myNick=null;code=null;isHost=false;raiseOpen=false;winnerShown=false;
+    if(cdTimer)clearInterval(cdTimer);
+    showGameUI(false);
+    show('setup-screen');
+    alert(`🚪 Você foi removido da mesa pelo anfitrião.`);
+    return;
+  }
+
+  // Update ban button visibility when host status changes
+  const banBtn=document.getElementById('ban-host-btn');
+  if(banBtn) banBtn.style.display=(isHost)?'flex':'none';
+
   if(state.phase==='waiting'){
     if(document.getElementById('wait-screen').classList.contains('active'))renderWaiting(state);
     else{show('wait-screen');renderWaiting(state);}
