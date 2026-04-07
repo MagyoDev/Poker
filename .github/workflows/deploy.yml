@@ -18,16 +18,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Inject Firebase config
+      - name: Generate Firebase config file
         run: |
           python3 - <<'EOF'
-          import os
-          cfg = os.environ['FIREBASE_CONFIG']
-          with open('index.html', 'r') as f:
-              html = f.read()
-          html = html.replace('/* FIREBASE_CONFIG_PLACEHOLDER */null', cfg)
-          with open('index.html', 'w') as f:
-              f.write(html)
+          import os, json
+          raw = os.environ['FIREBASE_CONFIG']
+          # Accept both plain JSON object and stringified JSON
+          cfg = json.loads(raw) if raw.strip().startswith('{') else json.loads(json.loads(raw))
+          # Write as a plain JSON file — no JS module syntax, no global variable
+          # The file is never in the repo; it only exists in the deployed artifact
+          with open('__fb__.js', 'w') as f:
+              f.write(json.dumps(cfg))
+          print("Config file generated OK")
           EOF
         env:
           FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}

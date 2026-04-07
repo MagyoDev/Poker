@@ -973,13 +973,6 @@ body.skin-mc .card.down { background:#3a5a3a; border-color:#2a4a2a; border-radiu
   </div>
 </div>
 
-<script>
-// Firebase config — injected at deploy time (never committed to source)
-(function(){
-  const _c = /* FIREBASE_CONFIG_PLACEHOLDER */null;
-  if(_c){ try{ window.__FB__=typeof _c==='string'?JSON.parse(_c):_c; }catch(e){} }
-})();
-</script>
 <script type="module">
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getDatabase, ref, set, get, onValue, off, remove }
@@ -1244,7 +1237,22 @@ function initFB(url,apiKey,projectId){
   try{const app=initializeApp({apiKey,databaseURL:url,projectId});DB=getDatabase(app);return true;}
   catch(e){console.error(e);return false;}
 }
-function tryAutoInit(){const cfg=window.__FB__;if(cfg&&cfg.apiKey)initFB(cfg.databaseURL,cfg.apiKey,cfg.projectId);}
+
+// Config is never in the HTML — fetched from a deploy-time generated file
+// that lives only on the server (never committed to the repo)
+async function tryAutoInit(){
+  try{
+    const r=await fetch('./__fb__.js',{cache:'no-store'});
+    if(!r.ok)throw new Error('config not found');
+    const txt=await r.text();
+    // File format: export default {...}  — strip the module wrapper
+    const json=txt.replace(/^\s*export\s+default\s*/,'').replace(/;\s*$/,'').trim();
+    const cfg=JSON.parse(json);
+    if(cfg&&cfg.apiKey)initFB(cfg.databaseURL,cfg.apiKey,cfg.projectId);
+  }catch(e){
+    console.warn('Firebase config not loaded:',e.message);
+  }
+}
 async function dbSet(p,v){await set(ref(DB,p),v);}
 async function dbGet(p){const s=await get(ref(DB,p));return s.val();}
 function dbListen(p,cb){if(unsubFn){off(tableRef);unsubFn=null;}tableRef=ref(DB,p);onValue(tableRef,s=>{if(s.val())cb(s.val());});unsubFn=()=>off(tableRef);}
